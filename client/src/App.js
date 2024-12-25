@@ -4,6 +4,8 @@ import Login from "./components/Login";
 import Home from "./components/Home";
 import NotFound from "./components/NotFound";
 import Email from "./components/Email";
+import PasswordReset from "./components/PasswordReset";
+import Verify from "./components/Verify";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +21,8 @@ const router = createBrowserRouter([
     element: <Login />,
   },
   { path: "/email", element: <Email /> },
+  { path: "/verify", element: <Verify /> },
+  { path: "/resetPassword", element: <PasswordReset /> },
 ]);
 
 function App() {
