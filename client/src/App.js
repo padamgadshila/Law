@@ -6,6 +6,7 @@ import NotFound from "./components/NotFound";
 import Email from "./components/Email";
 import PasswordReset from "./components/PasswordReset";
 import Verify from "./components/Verify";
+import AddEmployee from "./components/AddEmployee";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
   { path: "/email", element: <Email /> },
   { path: "/verify", element: <Verify /> },
   { path: "/resetPassword", element: <PasswordReset /> },
+  { path: "/addEmployee", element: <AddEmployee /> },
 ]);
 
 function App() {
