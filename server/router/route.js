@@ -5,6 +5,11 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import generate from "../helpers/username.password.generator.js";
 import multer from "multer";
+import mongoose from "mongoose";
+import path from "path";
+import fs from "fs";
+
+import Files from "../model/files.js";
 
 const router = Router();
 
@@ -36,31 +41,43 @@ let authorize = (roles = []) => {
   };
 };
 
+// proper object id
+
+let getId = (id) => {
+  const cleanedCid = id.replace(/['"]+/g, "");
+  const objectId = new mongoose.Types.ObjectId(cleanedCid);
+  return objectId;
+};
+
 // Storage configuration
 
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
+  destination: async (req, file, cb) => {
+    try {
+      cb(null, "uploads/");
+    } catch (error) {
+      cb(error, false);
+    }
   },
   filename: (req, file, cb) => {
-    cb(null, `${Date.now()}-${file.originalname}`);
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 
 const upload = multer({ storage });
 // post
-router.route("/adminLogin").post(async (req, res) => {
+router.route("/login").post(async (req, res) => {
   const { username, password, role } = req.body;
   try {
     const userExist = await User.findOne({ username, role: role });
 
     if (!userExist) {
-      return res.status(404).send({ error: "user not found" });
+      return res.status(404).json({ error: "User not found..!" });
     }
 
     const passwordCheck = await bcrypt.compare(password, userExist.password);
     if (!passwordCheck) {
-      return res.status(401).send({ error: "password is incorrect" });
+      return res.status(401).json({ error: "Password is incorrect..!" });
     }
     const key = process.env.JWT_KEY;
     const token = jwt.sign(
@@ -73,10 +90,10 @@ router.route("/adminLogin").post(async (req, res) => {
       { expiresIn: "2h" }
     );
 
-    if (userExist.role == "admin") {
+    if (userExist.role === "admin") {
       return res.status(201).json({
         message: "Admin login successful",
-        token,
+        token: token,
         user: {
           id: userExist._id,
           username: userExist.username,
@@ -85,10 +102,10 @@ router.route("/adminLogin").post(async (req, res) => {
       });
     }
 
-    if (userExist.role == "employee") {
+    if (userExist.role === "employee") {
       return res.status(201).json({
         message: "Employee login successful",
-        token,
+        token: token,
         user: {
           id: userExist._id,
           username: userExist.username,
@@ -100,11 +117,6 @@ router.route("/adminLogin").post(async (req, res) => {
     console.log(error);
     res.status(500).json({ error: "Server error" });
   }
-});
-
-router.route("/employeeLogin").post(async (req, res) => {
-  const data = req.user;
-  return res.status(201).send({ data });
 });
 
 router.route("/addEmployee").post(authorize("admin"), async (req, res) => {
@@ -144,31 +156,32 @@ router
   .post(authorize(["admin", "employee"]), async (req, res) => {
     try {
       const {
-        clientId,
+        cid,
         fname,
         mname,
         lname,
         email,
         mobile,
+        caseType,
         city,
-        state,
         pincode,
       } = req.body;
 
       const client = new Client({
-        clientId,
+        cid,
         fname,
         mname,
         lname,
         email,
         mobile,
-        address: { city, state, pincode },
+        caseType,
+        address: { city, pincode },
       });
 
       const savedClient = await client.save();
-      return res.status(201).send({ cid: savedClient._id });
+      return res.status(201).json({ cid: savedClient._id });
     } catch (error) {
-      return res.status(500).send({ error: "server error" });
+      return res.status(500).json({ error: "server error" });
     }
   });
 
@@ -198,6 +211,66 @@ router.route("/add").post(async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+router.route("/addClientDocument").post(
+  authorize(["admin", "employee"]),
+  upload.fields([
+    { name: "documentType-0", maxCount: 1 },
+    { name: "document-0", maxCount: 1 },
+    { name: "documentType-1", maxCount: 1 },
+    { name: "document-1", maxCount: 1 },
+    { name: "documentType-2", maxCount: 1 },
+    { name: "document-2", maxCount: 1 },
+    { name: "documentType-3", maxCount: 1 },
+    { name: "document-3", maxCount: 1 },
+    { name: "documentType-4", maxCount: 1 },
+    { name: "document-4", maxCount: 1 },
+    { name: "documentType-5", maxCount: 1 },
+    { name: "document-5", maxCount: 1 },
+    { name: "documentType-6", maxCount: 1 },
+    { name: "document-6", maxCount: 1 },
+    { name: "documentType-7", maxCount: 1 },
+    { name: "document-7", maxCount: 1 },
+    { name: "documentType-8", maxCount: 1 },
+    { name: "document-8", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const { cid, info } = req.body;
+      const ciid = getId(cid);
+      const docs = [];
+      for (let i = 0; i <= 8; i++) {
+        const documentTypeKey = `documentType-${i}`;
+        const documentFileKey = `document-${i}`;
+
+        if (req.files[documentFileKey] && req.body[documentTypeKey]) {
+          const documentType = req.body[documentTypeKey];
+          const documentFile = req.files[documentFileKey][0];
+
+          const fileData = {
+            documentType: documentType,
+            filename: documentFile.filename,
+            filePath: "uploads/" + documentFile.path,
+          };
+
+          docs.push(fileData);
+        }
+      }
+      const data = Files({
+        userId: ciid,
+        document: docs,
+        info: info,
+      });
+      const savedData = await data.save();
+
+      return res
+        .status(201)
+        .json({ message: "Documents uploaded..!", user: savedData });
+    } catch (error) {
+      return res.status(500).json({ error: "Server Error" });
+    }
+  }
+);
 
 // get
 

@@ -8,6 +8,8 @@ import PasswordReset from "./components/PasswordReset";
 import Verify from "./components/Verify";
 import AddEmployee from "./components/AddEmployee";
 import AddClient from "./components/AddClient";
+import AddClientDocuments from "./components/AddClientDocuments";
+import Admin from "./components/Admin";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +29,8 @@ const router = createBrowserRouter([
   { path: "/resetPassword", element: <PasswordReset /> },
   { path: "/addEmployee", element: <AddEmployee /> },
   { path: "/addClient", element: <AddClient /> },
+  { path: "/addClientDocuments", element: <AddClientDocuments /> },
+  { path: "/admin", element: <Admin /> },
 ]);
 
 function App() {

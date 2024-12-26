@@ -1,7 +1,11 @@
 import React from "react";
 import styles from "../css/style.module.css";
 import { useFormik } from "formik";
+import { addClientInfo } from "./helpers/helper";
+import { Toaster, toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 let AddClient = () => {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       fname: "Harry",
@@ -9,7 +13,7 @@ let AddClient = () => {
       lname: "Potter",
       email: "harrypotter@gmail.com",
       mobile: "7757069284",
-      cid: "dfgdhfgwuey",
+      cid: "13165241341rgd",
       caseType: "Family",
       city: "Pune",
       pincode: "411003",
@@ -17,17 +21,29 @@ let AddClient = () => {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      try {
+        let { data, status } = await addClientInfo(values);
+        if (status === 201) {
+          console.log(data);
+
+          toast.success("Client Info saved..!");
+          localStorage.setItem("cid", data.cid);
+          navigate("/addClientDocuments");
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
     },
   });
 
   return (
     <div className="w-full h-screen flex items-center justify-center">
+      <Toaster />
       <form
         className="border w-[650px] h-auto p-5 rounded-md shadow-md"
         onSubmit={formik.handleSubmit}
       >
-        <h1 className="text-4xl font-bold text-center">Add Client</h1>
+        <h1 className="text-4xl font-bold text-center">Client Information</h1>
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
             <label className="text-xl ml-1">First name</label>
@@ -125,7 +141,7 @@ let AddClient = () => {
         </div>
 
         <button className={styles.button} type="submit">
-          Add
+          Save
         </button>
       </form>
     </div>
