@@ -10,6 +10,7 @@ import AddEmployee from "./components/AddEmployee";
 import AddClient from "./components/AddClient";
 import AddClientDocuments from "./components/AddClientDocuments";
 import Admin from "./components/Admin";
+import { AuthorizeUser } from "./middllewares/auth";
 
 const router = createBrowserRouter([
   {
@@ -27,10 +28,38 @@ const router = createBrowserRouter([
   { path: "/email", element: <Email /> },
   { path: "/verify", element: <Verify /> },
   { path: "/resetPassword", element: <PasswordReset /> },
-  { path: "/addEmployee", element: <AddEmployee /> },
-  { path: "/addClient", element: <AddClient /> },
-  { path: "/addClientDocuments", element: <AddClientDocuments /> },
-  { path: "/admin", element: <Admin /> },
+  {
+    path: "/addEmployee",
+    element: (
+      <AuthorizeUser>
+        <AddEmployee />
+      </AuthorizeUser>
+    ),
+  },
+  {
+    path: "/addClient",
+    element: (
+      <AuthorizeUser>
+        <AddClient />
+      </AuthorizeUser>
+    ),
+  },
+  {
+    path: "/addClientDocuments",
+    element: (
+      <AuthorizeUser>
+        <AddClientDocuments />
+      </AuthorizeUser>
+    ),
+  },
+  {
+    path: "/admin",
+    element: (
+      <AddClientDocuments>
+        <Admin />
+      </AddClientDocuments>
+    ),
+  },
 ]);
 
 function App() {
