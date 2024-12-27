@@ -15,7 +15,9 @@ let AddClient = () => {
       mobile: "7757069284",
       cid: "13165241341rgd",
       caseType: "Family",
+      state: "Maharashtra",
       city: "Pune",
+      village: "Khadki",
       pincode: "411003",
     },
     validateOnBlur: false,
@@ -37,10 +39,10 @@ let AddClient = () => {
   });
 
   return (
-    <div className="w-full h-screen flex items-center justify-center">
+    <div className="w-full h-full flex justify-center">
       <Toaster />
       <form
-        className="border w-[650px] h-auto p-5 rounded-md shadow-md"
+        className="border w-[650px]  p-5 rounded-md shadow-md mt-5"
         onSubmit={formik.handleSubmit}
       >
         <h1 className="text-4xl font-bold text-center">Client Information</h1>
@@ -119,7 +121,17 @@ let AddClient = () => {
             </select>
           </div>
         </div>
+
         <div className="w-full flex gap-2">
+          <div className="w-full flex flex-col my-2">
+            <label className="text-xl ml-1">State</label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="State"
+              {...formik.getFieldProps("state")}
+            />
+          </div>
           <div className="w-full flex flex-col my-2">
             <label className="text-xl ml-1">City</label>
             <input
@@ -127,6 +139,18 @@ let AddClient = () => {
               className={styles.input}
               placeholder="City"
               {...formik.getFieldProps("city")}
+            />
+          </div>
+        </div>
+
+        <div className="w-full flex gap-2">
+          <div className="w-full flex flex-col my-2">
+            <label className="text-xl ml-1">Village</label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Village"
+              {...formik.getFieldProps("village")}
             />
           </div>
           <div className="w-full flex flex-col my-2">

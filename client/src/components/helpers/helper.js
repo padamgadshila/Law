@@ -8,6 +8,20 @@ let getCookie = () => {
     ?.split("=")[1];
 };
 
+export let auth = async () => {
+  try {
+    return await axios.post(
+      "/api/auth",
+      {},
+      {
+        headers: { Authorization: `Bearer ${getCookie()}` },
+      }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
 export let login = async (values) => {
   try {
     return await axios.post("/api/login", values);
@@ -39,6 +53,30 @@ export let addClientDocuments = async ({ documents, values }) => {
     formData.append("cid", JSON.stringify(values.cid));
 
     return await axios.post("/api/addClientDocument", formData, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let getClients = async () => {
+  try {
+    return await axios.get("/api/getClients", {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let deleteClientData = async (cid) => {
+  try {
+    return await axios.delete(`/api/deleteClient?id=${cid}`, {
       headers: {
         Authorization: `Bearer ${getCookie()}`,
       },

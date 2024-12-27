@@ -6,8 +6,6 @@ import jwt from "jsonwebtoken";
 import generate from "../helpers/username.password.generator.js";
 import multer from "multer";
 import mongoose from "mongoose";
-import path from "path";
-import fs from "fs";
 
 import Files from "../model/files.js";
 
@@ -20,11 +18,16 @@ let authorize = (roles = []) => {
   }
   return async (req, res, next) => {
     try {
-      const token = req.headers.authorization.split(" ")[1];
+      const authHeader = req.headers.authorization;
+      console.log(authHeader);
 
-      if (!token) {
-        return res.status(401).send({ error: "no token provided" });
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res
+          .status(401)
+          .json({ error: "No token provided or invalid header format" });
       }
+
+      const token = authHeader.split(" ")[1];
 
       const key = process.env.JWT_KEY;
       const decodedToken = jwt.verify(token, key);
@@ -41,8 +44,13 @@ let authorize = (roles = []) => {
   };
 };
 
-// proper object id
+router
+  .route("/auth")
+  .post(authorize(["admin", "employee"]), async (req, res) => {
+    return res.status(201).json({ message: "authorized" });
+  });
 
+// proper object id
 let getId = (id) => {
   const cleanedCid = id.replace(/['"]+/g, "");
   const objectId = new mongoose.Types.ObjectId(cleanedCid);
@@ -163,7 +171,9 @@ router
         email,
         mobile,
         caseType,
+        state,
         city,
+        village,
         pincode,
       } = req.body;
 
@@ -175,7 +185,7 @@ router
         email,
         mobile,
         caseType,
-        address: { city, pincode },
+        address: { state, city, village, pincode },
       });
 
       const savedClient = await client.save();
@@ -274,4 +284,42 @@ router.route("/addClientDocument").post(
 
 // get
 
+router
+  .route("/getClients")
+  .get(authorize(["admin", "employee"]), async (rqe, res) => {
+    try {
+      const clientData = await Client.find();
+      console.log(clientData);
+
+      if (clientData.length === 0) {
+        return res.status(404).json({ error: "No clients found" });
+      }
+
+      return res.status(201).json({ message: "okay", clientData });
+    } catch (error) {
+      return res.status(500).json({ error: "Server Error" });
+    }
+  });
+
+// Delete
+
+router
+  .route("/api/deleteClient")
+  .delete(authorize(["admin", "employee"]), async (req, res) => {
+    try {
+      const cid = req.query.id;
+      const id = getId(cid);
+      console.log(id);
+      const data = await Client.findById(id);
+      console.log(data);
+
+      // const del = await Client.deleteOne({ _id: id });
+      // if (del.deletedCount === 0) {
+      //   return res.status(404).json({ error: "Client not found" });
+      // }
+      return res.status(201).json({ message: "Deleted..!" });
+    } catch (error) {
+      return res.status(500).json({ error: "Server Error" });
+    }
+  });
 export default router;

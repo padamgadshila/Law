@@ -33,7 +33,12 @@ let Login = () => {
         if (status === 201) {
           toast.success(data.message);
           document.cookie = `token=${data.token}; path=/; SameSite=Strict;`;
-          navigate("/addClient");
+          localStorage.setItem("role", userType);
+          if (userType === "admin") {
+            navigate("/admin");
+          } else if (userType === "employee") {
+            navigate("/employee");
+          }
         }
       } catch (error) {
         if (error.response) {

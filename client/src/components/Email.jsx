@@ -1,7 +1,10 @@
 import React from "react";
 import styles from "../css/style.module.css";
 
+import { Link } from "react-router-dom";
 import { useFormik } from "formik";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 let Email = () => {
   const formik = useFormik({
@@ -34,6 +37,14 @@ let Email = () => {
         <button className={styles.button} type="submit">
           Send OTP
         </button>
+
+        <Link
+          to={"/login"}
+          className="mt-4 text-[20px] font-bold text-blue-500 "
+        >
+          <FontAwesomeIcon icon={faArrowLeft} className="mr-3" />
+          Back to Login
+        </Link>
       </form>
     </div>
   );

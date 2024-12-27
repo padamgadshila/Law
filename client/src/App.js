@@ -11,6 +11,8 @@ import AddClient from "./components/AddClient";
 import AddClientDocuments from "./components/AddClientDocuments";
 import Admin from "./components/Admin";
 import { AuthorizeUser } from "./middllewares/auth";
+import Employee from "./components/Employee";
+import Session from "./components/Session";
 
 const router = createBrowserRouter([
   {
@@ -55,11 +57,20 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: (
-      <AddClientDocuments>
+      <AuthorizeUser>
         <Admin />
-      </AddClientDocuments>
+      </AuthorizeUser>
     ),
   },
+  {
+    path: "/employee",
+    element: (
+      <AuthorizeUser>
+        <Employee />
+      </AuthorizeUser>
+    ),
+  },
+  { path: "/expired", element: <Session /> },
 ]);
 
 function App() {

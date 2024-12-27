@@ -7,6 +7,7 @@
 .bx {
   @apply shadow-md;
 }
+
 .input {
   width: 100%;
   height: 60px;
@@ -21,4 +22,13 @@
   margin: 5px 0;
   @apply w-full h-auto text-center py-3 rounded-md text-2xl text-white font-bold shadow-md;
   @apply hover:bg-[var(--pink-h)];
+}
+
+.nav {
+  @apply flex items-center justify-between w-full mx-auto h-[70px] border
+}
+
+.profile {
+  background: linear-gradient(90deg, #fd25d6, #fc5543);
+  @apply w-full h-[150px] bg-pink-500 rounded-b-3xl relative
 }

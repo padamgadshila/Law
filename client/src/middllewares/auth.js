@@ -1,14 +1,30 @@
+import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { auth } from "../components/helpers/helper";
 
 export const AuthorizeUser = ({ children }) => {
-  const token = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("token="))
-    ?.split("=")[1];
+  const [isAuthorized, setIsAuthorized] = useState(null);
 
-  if (!token) {
-    return <Navigate to={"/"} replace={true}></Navigate>;
+  useEffect(() => {
+    const verifyUser = async () => {
+      try {
+        const { status } = await auth();
+        if (status === 201) {
+          setIsAuthorized(true);
+        } else {
+          setIsAuthorized(false);
+        }
+      } catch (error) {
+        setIsAuthorized(false);
+      }
+    };
+
+    verifyUser();
+  }, []);
+
+  if (isAuthorized === null) {
+    return <div>Loading...</div>;
   }
 
-  return children;
+  return isAuthorized ? children : <Navigate to="/expired" replace />;
 };

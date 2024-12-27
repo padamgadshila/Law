@@ -3,7 +3,9 @@ import styles from "../css/style.module.css";
 import { useFormik } from "formik";
 import { addClientDocuments } from "./helpers/helper";
 import toast, { Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 let AddClientDocuments = () => {
   const navigate = useNavigate();
@@ -28,7 +30,13 @@ let AddClientDocuments = () => {
         if (status === 201) {
           toast.success(data.message);
           localStorage.removeItem("cid");
-          navigate("/");
+          let role = localStorage.getItem("role");
+
+          if (role === "admin") {
+            navigate("/admin");
+          } else if (role === "employee") {
+            navigate("/employee");
+          }
         }
       } catch (error) {
         toast.error("Something went wrong");
@@ -151,6 +159,23 @@ let AddClientDocuments = () => {
         <button className={styles.button} type="submit">
           Upload
         </button>
+        {localStorage.getItem("role") === "admin" ? (
+          <Link
+            to={"/admin"}
+            className="mt-4 text-[20px] font-bold text-blue-500 "
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-3" />
+            Back to Home
+          </Link>
+        ) : (
+          <Link
+            to={"/employee"}
+            className="mt-4 text-[20px] font-bold text-blue-500 "
+          >
+            <FontAwesomeIcon icon={faArrowLeft} className="mr-3" />
+            Back to Home
+          </Link>
+        )}
       </form>
     </div>
   );
