@@ -304,19 +304,15 @@ router
 // Delete
 
 router
-  .route("/api/deleteClient")
+  .route("/deleteClient")
   .delete(authorize(["admin", "employee"]), async (req, res) => {
     try {
       const cid = req.query.id;
       const id = getId(cid);
-      console.log(id);
-      const data = await Client.findById(id);
-      console.log(data);
-
-      // const del = await Client.deleteOne({ _id: id });
-      // if (del.deletedCount === 0) {
-      //   return res.status(404).json({ error: "Client not found" });
-      // }
+      const del = await Client.deleteOne({ _id: id });
+      if (del.deletedCount === 0) {
+        return res.status(404).json({ error: "Client not found" });
+      }
       return res.status(201).json({ message: "Deleted..!" });
     } catch (error) {
       return res.status(500).json({ error: "Server Error" });

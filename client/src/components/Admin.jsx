@@ -10,7 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { Link } from "react-router-dom";
-import { Toaster, toast } from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
 import { getClients } from "./helpers/helper";
 import AdminClient from "./AdminClient";
 let Admin = () => {
@@ -266,7 +266,10 @@ let Admin = () => {
           )}
           {activeTab === 2 && (
             <div className="absolute w-full h-full px-2">
-              <AdminClient clientData={clientData} />
+              <AdminClient
+                clientData={clientData}
+                setClientData={setClientData}
+              />
             </div>
           )}
         </div>

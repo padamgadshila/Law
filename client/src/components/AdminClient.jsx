@@ -2,7 +2,22 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-export default function AdminClient({ clientData, deleteClient }) {
+import { deleteClientData } from "./helpers/helper";
+import { toast } from "react-hot-toast";
+export default function AdminClient({ clientData, setClientData }) {
+  let deleteClient = async (cid) => {
+    try {
+      const { data, status } = await deleteClientData(cid);
+      if (status === 201) {
+        toast.success(data.message);
+        setClientData((prevData) =>
+          prevData.filter((client) => client._id !== cid)
+        );
+      }
+    } catch (error) {
+      toast.error("Failed..!");
+    }
+  };
   return (
     <div>
       <Link to={"/addClient"} className="fixed bottom-5 right-7">
@@ -57,7 +72,7 @@ export default function AdminClient({ clientData, deleteClient }) {
                 <Link to={`/view?id=${e._id}`}>Edit</Link>
               </td>
               <td className="px-4 py-2 border text-center text-red-500 cursor-pointer hover:underline">
-                <Link to={`/delete?id=${e._id}`}>Delete</Link>
+                <button onClick={() => deleteClient(e._id)}>Delete</button>
               </td>
             </tr>
           ))}
