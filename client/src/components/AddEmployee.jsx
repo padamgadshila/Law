@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../css/style.module.css";
 import { useFormik } from "formik";
-let AddEmployee = () => {
+export default function AddEmployee() {
   const formik = useFormik({
     initialValues: {
       fname: "Padam",
@@ -75,6 +75,4 @@ let AddEmployee = () => {
       </form>
     </div>
   );
-};
-
-export default AddEmployee;
+}

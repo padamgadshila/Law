@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-let Session = () => {
+export default function Session() {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="border w-[450px] flex flex-col h-auto p-5 rounded-md shadow-md">
@@ -25,6 +25,4 @@ let Session = () => {
       </div>
     </div>
   );
-};
-
-export default Session;
+}

@@ -4,7 +4,7 @@ import { useFormik } from "formik";
 import { addClientInfo } from "./helpers/helper";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-let AddClient = () => {
+export default function AddClient() {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
@@ -170,6 +170,4 @@ let AddClient = () => {
       </form>
     </div>
   );
-};
-
-export default AddClient;
+}

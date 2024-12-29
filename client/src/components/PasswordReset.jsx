@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { useFormik } from "formik";
 
-let PasswordReset = () => {
+export default function PasswordReset() {
   const formik = useFormik({
     initialValues: {
       password: "",
@@ -71,6 +71,4 @@ let PasswordReset = () => {
       </form>
     </div>
   );
-};
-
-export default PasswordReset;
+}

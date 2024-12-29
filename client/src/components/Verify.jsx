@@ -3,7 +3,7 @@ import styles from "../css/style.module.css";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import avatar from "./images/profile.png";
-let Verify = () => {
+export default function Verify() {
   const formik = useFormik({
     initialValues: {
       otp: "",
@@ -50,6 +50,4 @@ let Verify = () => {
       </form>
     </div>
   );
-};
-
-export default Verify;
+}

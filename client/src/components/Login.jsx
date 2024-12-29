@@ -8,7 +8,7 @@ import { Toaster, toast } from "react-hot-toast";
 import loginValidation from "./helpers/validation";
 import { login } from "./helpers/helper";
 
-let Login = () => {
+export default function Login() {
   const [searchParams] = useSearchParams();
   const isAdmin = searchParams.has("admin");
   const isEmployee = searchParams.has("employee");
@@ -107,5 +107,4 @@ let Login = () => {
       </form>
     </div>
   );
-};
-export default Login;
+}

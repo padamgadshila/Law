@@ -1,6 +1,6 @@
 import React from "react";
 
-let NotFound = () => {
+export default function  NotFound (){
   return (
     <div>
       404 Error
@@ -8,5 +8,3 @@ let NotFound = () => {
     </div>
   );
 };
-
-export default NotFound;

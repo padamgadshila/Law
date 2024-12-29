@@ -1,12 +1,15 @@
 import { create } from "zustand";
 
-export let login = create((set) => ({
-  data: {
-    username: "",
-    password: "",
-  },
-  setUsername: (username) =>
-    set((state) => ({ data: { ...state.data, username: username } })),
-  setPassword: (password) =>
-    set((state) => ({ data: { ...state.data, password: password } })),
+export const useClientStore = create((set) => ({
+  clientData: [],
+  setClientData: (data) => set({ clientData: data }),
+  removeClient: (cid) =>
+    set((state) => ({
+      clientData: state.clientData.filter((client) => client._id !== cid),
+    })),
+}));
+
+export let useClientDocumentsStore = create((set) => ({
+  clientDocs: [],
+  setClientDocs: (data) => set({ clientDocs: data }),
 }));

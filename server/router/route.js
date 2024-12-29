@@ -6,7 +6,8 @@ import jwt from "jsonwebtoken";
 import generate from "../helpers/username.password.generator.js";
 import multer from "multer";
 import mongoose from "mongoose";
-
+import fs from "fs";
+import path from "path";
 import Files from "../model/files.js";
 
 const router = Router();
@@ -19,8 +20,6 @@ let authorize = (roles = []) => {
   return async (req, res, next) => {
     try {
       const authHeader = req.headers.authorization;
-      console.log(authHeader);
-
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res
           .status(401)
@@ -260,7 +259,7 @@ router.route("/addClientDocument").post(
           const fileData = {
             documentType: documentType,
             filename: documentFile.filename,
-            filePath: "uploads/" + documentFile.path,
+            filePath: "uploads/" + documentFile.filename,
           };
 
           docs.push(fileData);
@@ -289,7 +288,6 @@ router
   .get(authorize(["admin", "employee"]), async (rqe, res) => {
     try {
       const clientData = await Client.find();
-      console.log(clientData);
 
       if (clientData.length === 0) {
         return res.status(404).json({ error: "No clients found" });
@@ -301,21 +299,51 @@ router
     }
   });
 
-// Delete
+router.route("/clientDoc").get(authorize("admin"), async (req, res) => {
+  try {
+    const cid = req.query.id;
+    const id = getId(cid);
 
+    const docs = await Files.find({ userId: id });
+
+    if (docs.length === 0) {
+      return res.status(404).json({ error: "Document not found" });
+    }
+    return res.status(201).json({ docs });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+});
+
+// Delete
 router
   .route("/deleteClient")
   .delete(authorize(["admin", "employee"]), async (req, res) => {
     try {
       const cid = req.query.id;
       const id = getId(cid);
-      const del = await Client.deleteOne({ _id: id });
-      if (del.deletedCount === 0) {
+
+      const clientDocs = await Files.find({ userId: id });
+
+      if (clientDocs) {
+        for (const doc of clientDocs) {
+          for (const file of doc.document) {
+            const fullPath = path.join("uploads", file.filename);
+            fs.unlinkSync(fullPath);
+          }
+        }
+        const delDocuments = await Files.deleteMany({ userId: id });
+      }
+
+      const delClient = await Client.deleteOne({ _id: id });
+      if (delClient.deletedCount === 0) {
         return res.status(404).json({ error: "Client not found" });
       }
       return res.status(201).json({ message: "Deleted..!" });
     } catch (error) {
+      console.error("Server error during deletion:", error);
       return res.status(500).json({ error: "Server Error" });
     }
   });
+
 export default router;

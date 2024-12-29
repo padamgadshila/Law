@@ -7,14 +7,17 @@ import {
   faGear,
   faUserFriends,
   faUsers,
+  faSyncAlt,
 } from "@fortawesome/free-solid-svg-icons";
-
 import { Link } from "react-router-dom";
-import { Toaster } from "react-hot-toast";
-import { getClients } from "./helpers/helper";
+import { Toaster, toast } from "react-hot-toast";
 import AdminClient from "./AdminClient";
-let Admin = () => {
-  let [activeTab, setActiveTab] = useState(0);
+import { getClients } from "./helpers/helper";
+import { useClientStore } from "../store/store";
+export default function Admin() {
+  let [activeTab, setActiveTab] = useState(() => {
+    return parseInt(localStorage.getItem("activeTab")) || 0;
+  });
 
   let tabs = [
     { name: "Dashboard", icon: faGear },
@@ -22,6 +25,15 @@ let Admin = () => {
     { name: "Client", icon: faUserFriends },
   ];
 
+  let [disableFilter, setDisableFilter] = useState(false);
+  let [showProfile, setShowProfile] = useState(false);
+
+  let [employeeData, setEmployeeData] = useState([]);
+  const handleOnChange = (e) => {
+    const { name, value } = e.target;
+    setQuery((prev) => ({ ...prev, [name]: value }));
+  };
+  let [query, setQuery] = useState({ search: "", filter: "" });
   let filters = [
     { name: "cid", value: "Client Id" },
     { name: "fname", value: "First name" },
@@ -36,43 +48,46 @@ let Admin = () => {
     { name: "pincode", value: "Pincode" },
   ];
 
-  let [disableFilter, setDisableFilter] = useState(false);
-  let [showProfile, setShowProfile] = useState(false);
-  let [clientData, setClientData] = useState([]);
-  let [employeeData, setEmployeeData] = useState([
-    {
-      eid: 12,
-      fname: "Padam",
-      lname: "Gadshila",
-      username: "padam234",
-      email: "padamgadshila17@gmail.com",
-      mobile: "784512952",
-    },
-    {
-      eid: 13,
-      fname: "Padam",
-      lname: "Gadshila",
-      username: "padam234",
-      email: "padamgadshila17@gmail.com",
-      mobile: "784512952",
-    },
-    {
-      eid: 14,
-      fname: "Padam",
-      lname: "Gadshila",
-      username: "padam234",
-      email: "padamgadshila17@gmail.com",
-      mobile: "784512952",
-    },
-  ]);
-  let [query, setQuery] = useState({ search: "", filter: "" });
+  // Local
+  useEffect(() => {
+    const storedTab = localStorage.getItem("activeTab");
+    if (storedTab !== null) {
+      setActiveTab(Number(storedTab));
+    }
+  }, []);
 
-  const handleOnChange = (e) => {
-    const { name, value } = e.target;
-    setQuery((prev) => ({ ...prev, [name]: value }));
-  };
+  useEffect(() => {
+    localStorage.setItem("activeTab", activeTab);
+  }, [activeTab]);
+
   let [originalClientData, setOriginalClientData] = useState([]);
 
+  const [isLoading, setLoading] = useState(false);
+  const setClientData = useClientStore((state) => state.setClientData);
+  const clientData = useClientStore((state) => state.clientData);
+  const removeClient = useClientStore((state) => state.removeClient);
+  let Refresh = async () => {
+    setLoading(true);
+    try {
+      const { data, status } = await getClients();
+      if (status === 201) {
+        setClientData(data.clientData);
+        console.log(clientData);
+      } else {
+        throw new Error("Failed to fetch clients");
+      }
+    } catch (error) {
+      if (error.response) {
+        const { data, status } = error.response;
+
+        if (status === 404) {
+          toast.error(data.error);
+        }
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     if (query.filter && query.search) {
       const filtered = originalClientData.filter((item) =>
@@ -82,23 +97,7 @@ let Admin = () => {
     } else {
       setClientData(originalClientData);
     }
-  }, [query, originalClientData]);
-
-  useEffect(() => {
-    const getClientData = async () => {
-      try {
-        const { data, status } = await getClients();
-        if (status === 201) {
-          setClientData(data.clientData);
-          setOriginalClientData(data.clientData); // Store the original data
-        }
-      } catch (error) {
-        console.log("Data not found");
-      }
-    };
-
-    getClientData();
-  }, []);
+  }, [query]);
 
   return (
     <div className="w-full h-screen">
@@ -172,6 +171,13 @@ let Admin = () => {
                 </option>
               ))}
             </select>
+            <FontAwesomeIcon
+              spin={isLoading}
+              icon={faSyncAlt}
+              className="ml-5 cursor-pointer text-2xl bg-[#fd25d6] p-2 rounded-full text-white"
+              title="Refresh"
+              onClick={Refresh}
+            />
           </div>
         )}
         <img
@@ -269,6 +275,9 @@ let Admin = () => {
               <AdminClient
                 clientData={clientData}
                 setClientData={setClientData}
+                removeClient={removeClient}
+                toast={toast}
+                setOriginalClientData={setOriginalClientData}
               />
             </div>
           )}
@@ -276,6 +285,4 @@ let Admin = () => {
       </div>
     </div>
   );
-};
-
-export default Admin;
+}

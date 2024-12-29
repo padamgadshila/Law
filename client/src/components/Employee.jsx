@@ -1,7 +1,5 @@
 import React from "react";
 
-let Employee = () => {
+export default function Employee() {
   return <div>Employee</div>;
-};
-
-export default Employee;
+}

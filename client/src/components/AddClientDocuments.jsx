@@ -7,7 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
-let AddClientDocuments = () => {
+export default function AddClientDocuments() {
   const navigate = useNavigate();
 
   const [documents, setDocuments] = useState([
@@ -179,6 +179,4 @@ let AddClientDocuments = () => {
       </form>
     </div>
   );
-};
-
-export default AddClientDocuments;
+}

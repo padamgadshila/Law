@@ -85,3 +85,15 @@ export let deleteClientData = async (cid) => {
     throw error;
   }
 };
+
+export let getClientDocuments = async (cid) => {
+  try {
+    return await axios.get(`/api/clientDoc?id=${cid}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};

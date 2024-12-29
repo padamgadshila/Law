@@ -5,8 +5,7 @@ import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-
-let Email = () => {
+export default function Email() {
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -48,6 +47,4 @@ let Email = () => {
       </form>
     </div>
   );
-};
-
-export default Email;
+}
