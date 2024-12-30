@@ -1,26 +1,34 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "../css/style.module.css";
 import { useFormik } from "formik";
-import { addEmployee } from "./helpers/helper";
+import {
+  addEmployee,
+  getOneEmployeeById,
+  updateEmployee,
+} from "./helpers/helper";
 import { toast, Toaster } from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-export default function AddEmployee() {
+import { useLocation, useNavigate } from "react-router-dom";
+export default function EditEmployee() {
   const navigate = useNavigate();
+  const location = useLocation();
 
+  const eid = location.search.split("=")[1];
   const formik = useFormik({
     initialValues: {
+      _id: "",
       fname: "",
       lname: "",
       email: "",
       mobile: "",
-      role: "employee",
+      role: "",
+      username: "",
     },
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
       try {
-        const { data, status } = await addEmployee(values);
-        if (status === 201) {
+        const { data, status } = await updateEmployee(values);
+        if (status === 200) {
           toast.success(data.message);
           navigate("/admin");
         }
@@ -32,7 +40,32 @@ export default function AddEmployee() {
       }
     },
   });
+  let getEmployeeById = async (id) => {
+    try {
+      const {
+        data: { employeeData },
+        status,
+      } = await getOneEmployeeById(id);
+      if (status === 200) {
+        formik.setValues({
+          _id: employeeData._id || "",
+          fname: employeeData.fname || "",
+          lname: employeeData.lname || "",
+          email: employeeData.email || "",
+          mobile: employeeData.mobile || "",
+          role: employeeData.role || "",
+          username: employeeData.username || "",
+        });
+      }
+    } catch (error) {
+      const { data } = error.response;
+      toast.error(data.error);
+    }
+  };
 
+  useEffect(() => {
+    getEmployeeById(eid);
+  }, []);
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <Toaster />
@@ -40,7 +73,7 @@ export default function AddEmployee() {
         className="border w-[450px] h-auto p-5 rounded-md shadow-md"
         onSubmit={formik.handleSubmit}
       >
-        <h1 className="text-4xl font-bold text-center">Add Employee</h1>
+        <h1 className="text-4xl font-bold text-center">Update Details</h1>
         <br />
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
@@ -61,6 +94,15 @@ export default function AddEmployee() {
               {...formik.getFieldProps("lname")}
             />
           </div>
+        </div>
+        <div className="w-full flex flex-col my-2">
+          <label className="text-xl ml-1">Username</label>
+          <input
+            type="text"
+            className={styles.input}
+            placeholder="Username"
+            {...formik.getFieldProps("username")}
+          />
         </div>
         <div className="w-full flex flex-col my-2">
           <label className="text-xl ml-1">Email</label>
@@ -86,8 +128,14 @@ export default function AddEmployee() {
           placeholder="role"
           {...formik.getFieldProps("role")}
         />
+        <input
+          type="hidden"
+          className={styles.input}
+          placeholder="id"
+          {...formik.getFieldProps("_id")}
+        />
         <button className={styles.button} type="submit">
-          Add
+          Update
         </button>
       </form>
     </div>

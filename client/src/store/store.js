@@ -17,3 +17,14 @@ export let useClientDocumentsStore = create((set) => ({
   },
   setClientDocs: (data) => set({ clientDocs: data }),
 }));
+
+export let useEmployeeStore = create((set) => ({
+  employeeData: [],
+  setEmployeeData: (data) => set({ employeeData: data }),
+  removeEmployee: (eid) =>
+    set((state) => ({
+      employeeData: state.employeeData.filter(
+        (employee) => employee._id !== eid
+      ),
+    })),
+}));

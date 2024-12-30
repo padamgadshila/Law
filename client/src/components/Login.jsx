@@ -28,7 +28,6 @@ export default function Login() {
     onSubmit: async (values) => {
       try {
         const { data, status } = await login(values);
-        console.log(data);
 
         if (status === 201) {
           toast.success(data.message);

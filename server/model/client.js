@@ -14,6 +14,7 @@ const clientSchema = new mongoose.Schema({
     village: { type: String },
     pincode: { type: String },
   },
+  status: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 

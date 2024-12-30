@@ -14,6 +14,7 @@ import { AuthorizeUser } from "./middllewares/auth";
 import Employee from "./components/Employee";
 import Session from "./components/Session";
 import EditClient from "./components/EditClient";
+import EditEmployee from "./components/EditEmployee";
 
 const router = createBrowserRouter([
   {
@@ -78,6 +79,14 @@ const router = createBrowserRouter([
     element: (
       <AuthorizeUser>
         <EditClient />
+      </AuthorizeUser>
+    ),
+  },
+  {
+    path: "/editEmployee",
+    element: (
+      <AuthorizeUser>
+        <EditEmployee />
       </AuthorizeUser>
     ),
   },

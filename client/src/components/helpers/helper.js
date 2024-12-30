@@ -141,7 +141,65 @@ export const getOneClientBYId = async (id) => {
 
 export const updateClient = async (values) => {
   try {
-    return await axios.post("/api/updateClient", values, {
+    return await axios.put("/api/updateClient", values, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getEmployee = async () => {
+  try {
+    return await axios.get("/api/getEmployee?role=employee", {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const deleteEmployeeData = async (id) => {
+  try {
+    return await axios.delete(`/api/deleteEmployee?id=${id}&role=employee`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let addEmployee = async (values) => {
+  try {
+    return await axios.post("/api/addEmployee", values, {
+      headers: { Authorization: `Bearer ${getCookie()}` },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const getOneEmployeeById = async (id) => {
+  try {
+    return await axios.get(`/api/employeeData?id=${id}&role=employee`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateEmployee = async (values) => {
+  try {
+    return await axios.put("/api/updateEmployee", values, {
       headers: {
         Authorization: `Bearer ${getCookie()}`,
       },

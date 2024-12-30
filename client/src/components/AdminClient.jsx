@@ -28,12 +28,12 @@ export default function AdminClient({
       if (status === 201) {
         setClientData(data.clientData);
         setOriginalClientData(data.clientData);
-        console.log(clientData);
-      } else {
-        throw new Error("Failed to fetch clients");
       }
     } catch (error) {
-      console.log("Data not found");
+      if (error.response) {
+        const { data } = error.response;
+        toast.error(data.error);
+      }
     }
   };
 
@@ -50,11 +50,8 @@ export default function AdminClient({
       }
     } catch (error) {
       if (error.response) {
-        const { data, status } = error.response;
-
-        if (status === 404) {
-          toast.error(data.error);
-        }
+        const { data } = error.response;
+        toast.error(data.error);
       }
     }
   };
@@ -85,17 +82,17 @@ export default function AdminClient({
   let TableRows = ({ data, i }) => {
     return (
       <tr className="hover:bg-gray-100" key={i}>
-        <td className="px-4 py-2 border">{data.cid}</td>
-        <td className="px-4 py-2 border">{data.fname}</td>
-        <td className="px-4 py-2 border">{data.mname || "N.A."}</td>
-        <td className="px-4 py-2 border">{data.lname}</td>
-        <td className="px-4 py-2 border">{data.email}</td>
-        <td className="px-4 py-2 border">{data.mobile}</td>
-        <td className="px-4 py-2 border">{data.caseType}</td>
-        <td className="px-4 py-2 border">{data.dob}</td>
-        <td className="px-4 py-2 border">{data.address.city}</td>
-        <td className="px-4 py-2 border">{data.address.village}</td>
-        <td className="px-4 py-2 border">{data.address.pincode}</td>
+        <td className="px-4 py-2 border">{data.cid || "-"}</td>
+        <td className="px-4 py-2 border">{data.fname || "-"}</td>
+        <td className="px-4 py-2 border">{data.mname || "-"}</td>
+        <td className="px-4 py-2 border">{data.lname || "-"}</td>
+        <td className="px-4 py-2 border">{data.email || "-"}</td>
+        <td className="px-4 py-2 border">{data.mobile || "-"}</td>
+        <td className="px-4 py-2 border">{data.caseType || "-"}</td>
+        <td className="px-4 py-2 border">{data.dob || "-"}</td>
+        <td className="px-4 py-2 border">{data.address.city || "-"}</td>
+        <td className="px-4 py-2 border">{data.address.village || "-"}</td>
+        <td className="px-4 py-2 border">{data.address.pincode || "-"}</td>
         <td className="px-4 py-2 border text-center text-blue-500 cursor-pointer hover:underline">
           <button
             onClick={() => {

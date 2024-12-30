@@ -71,9 +71,7 @@ export default function AddClientDocuments() {
     setDocuments(updatedDocuments);
   };
 
-  useEffect(() => {
-    console.log(documents);
-  }, [documents]);
+  useEffect(() => {}, [documents]);
 
   const docTypes = [
     "Client Photo",

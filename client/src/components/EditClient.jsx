@@ -49,6 +49,7 @@ export default function EditClient() {
         data: { clientData },
         status,
       } = await getOneClientBYId(id);
+
       if (status === 200) {
         formik.setValues({
           _id: clientData._id || "",

@@ -14,7 +14,8 @@ import { Link } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import AdminClient from "./AdminClient";
 import { getClients } from "./helpers/helper";
-import { useClientStore } from "../store/store";
+import { useClientStore, useEmployeeStore } from "../store/store";
+import AdminEmployee from "./AdminEmployee";
 export default function Admin() {
   let [activeTab, setActiveTab] = useState(() => {
     return parseInt(localStorage.getItem("activeTab")) || 0;
@@ -29,7 +30,6 @@ export default function Admin() {
   let [disableFilter, setDisableFilter] = useState(false);
   let [showProfile, setShowProfile] = useState(false);
 
-  let [employeeData, setEmployeeData] = useState([]);
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setQuery((prev) => ({ ...prev, [name]: value }));
@@ -52,28 +52,39 @@ export default function Admin() {
   // Local
   useEffect(() => {
     const storedTab = localStorage.getItem("activeTab");
+    const storedCid = localStorage.getItem("cid");
     if (storedTab !== null) {
       setActiveTab(Number(storedTab));
+    }
+    if (storedCid !== null) {
+      localStorage.removeItem("cid");
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
-
+  let [Totals, setTotals] = useState([
+    { name: "employees", total: "" },
+    { name: "clients", total: "" },
+  ]);
   let [originalClientData, setOriginalClientData] = useState([]);
 
   let [isLoading, setLoading] = useState(false);
   const setClientData = useClientStore((state) => state.setClientData);
   const clientData = useClientStore((state) => state.clientData);
   const removeClient = useClientStore((state) => state.removeClient);
+
+  const employeeData = useEmployeeStore((state) => state.employeeData);
+  const setEmployeeData = useEmployeeStore((state) => state.setEmployeeData);
+  const removeEmployee = useEmployeeStore((state) => state.removeEmployee);
+
   let Refresh = async () => {
     setLoading(true);
     try {
       const { data, status } = await getClients();
       if (status === 201) {
         setClientData(data.clientData);
-        console.log(clientData);
       } else {
         throw new Error("Failed to fetch clients");
       }
@@ -99,6 +110,8 @@ export default function Admin() {
       setClientData(originalClientData);
     }
   }, [query]);
+
+  useEffect(() => {});
 
   return (
     <div className="w-full h-screen">
@@ -148,6 +161,20 @@ export default function Admin() {
 
       <div className={styles.nav}>
         <h1 className="ml-6 font-bold text-2xl text-black">Admin Name</h1>
+        {activeTab === 1 && (
+          <Link
+            to={"/addEmployee"}
+            className={styles.button}
+            style={{
+              fontSize: "20px",
+              padding: "5px",
+              marginLeft: "5px",
+              width: "200px",
+            }}
+          >
+            Add Employee <FontAwesomeIcon icon={faUserPlus} />
+          </Link>
+        )}
         {activeTab === 2 && (
           <div className="flex items-center gap-1">
             <input
@@ -239,43 +266,12 @@ export default function Admin() {
           )}
           {activeTab === 1 && (
             <div className="absolute w-full h-full p-2">
-              <table className="border-collapse w-full text-left table-auto">
-                <thead className="">
-                  <tr className="text-white">
-                    <th className="bg-[#fd25d6] px-4 py-2  rounded-tl-xl">
-                      First Name
-                    </th>
-                    <th className="bg-[#fd25d6] px-4 py-2 ">Last Name</th>
-                    <th className="bg-[#fd25d6] px-4 py-2 ">Username</th>
-                    <th className="bg-[#fd25d6] px-4 py-2 ">Email</th>
-                    <th className="bg-[#fd25d6] px-4 py-2 ">Mobile</th>
-                    <th
-                      className="bg-[#fd25d6] px-4 py-2 text-center  rounded-tr-xl"
-                      colSpan={2}
-                    >
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {employeeData.map((e, i) => (
-                    <tr className="hover:bg-gray-100" key={e.eid}>
-                      <td className="px-4 py-2 border">{e.fname}</td>
-                      <td className="px-4 py-2 border">{e.lname}</td>
-                      <td className="px-4 py-2 border">{e.username}</td>
-                      <td className="px-4 py-2 border">{e.email}</td>
-                      <td className="px-4 py-2 border">{e.mobile}</td>
-
-                      <td className="px-4 py-2 border text-green-500 cursor-pointer hover:underline">
-                        <Link to={`/edit?id=${e.eid}`}>Edit</Link>
-                      </td>
-                      <td className="px-4 py-2 border text-red-500 cursor-pointer hover:underline">
-                        <Link to={`/delete?id=${e.eid}`}>Delete</Link>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <AdminEmployee
+                employeeData={employeeData}
+                setEmployeeData={setEmployeeData}
+                removeEmployee={removeEmployee}
+                toast={toast}
+              />
             </div>
           )}
           {activeTab === 2 && (
