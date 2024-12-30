@@ -8,8 +8,8 @@ const clientSchema = new mongoose.Schema({
   email: { type: String },
   mobile: { type: String },
   caseType: { type: String },
+  dob: { type: String },
   address: {
-    state: { type: String },
     city: { type: String },
     village: { type: String },
     pincode: { type: String },

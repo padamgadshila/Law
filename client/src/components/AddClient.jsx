@@ -8,17 +8,17 @@ export default function AddClient() {
   const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
-      fname: "Harry",
-      mname: "James",
-      lname: "Potter",
-      email: "harrypotter@gmail.com",
-      mobile: "7757069284",
-      cid: "13165241341rgd",
-      caseType: "Family",
-      state: "Maharashtra",
-      city: "Pune",
-      village: "Khadki",
-      pincode: "411003",
+      fname: "",
+      mname: "",
+      lname: "",
+      email: "",
+      mobile: "",
+      cid: "",
+      caseType: "",
+      dob: "",
+      city: "",
+      village: "",
+      pincode: "",
     },
     validateOnBlur: false,
     validateOnChange: false,
@@ -124,12 +124,12 @@ export default function AddClient() {
 
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
-            <label className="text-xl ml-1">State</label>
+            <label className="text-xl ml-1">Dob</label>
             <input
-              type="text"
+              type="date"
               className={styles.input}
-              placeholder="State"
-              {...formik.getFieldProps("state")}
+              placeholder="Dob"
+              {...formik.getFieldProps("dob")}
             />
           </div>
           <div className="w-full flex flex-col my-2">

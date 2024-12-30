@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../css/style.module.css";
 import { useFormik } from "formik";
 import { addClientDocuments } from "./helpers/helper";
@@ -11,7 +11,11 @@ export default function AddClientDocuments() {
   const navigate = useNavigate();
 
   const [documents, setDocuments] = useState([
-    { documentType: "", document: "Select the file" },
+    {
+      documentType: "",
+      document: "",
+      filename: "Select the file",
+    },
   ]);
 
   const formik = useFormik({
@@ -47,7 +51,11 @@ export default function AddClientDocuments() {
   const addDocuments = () => {
     setDocuments([
       ...documents,
-      { documentType: "", document: "Select the file" },
+      {
+        documentType: "",
+        document: "",
+        filename: "Select the file",
+      },
     ]);
   };
   const handleDocumentChange = (index, field, value) => {
@@ -59,8 +67,13 @@ export default function AddClientDocuments() {
   const handleFileSelection = (index, file) => {
     const updatedDocuments = [...documents];
     updatedDocuments[index].document = file || null;
+    updatedDocuments[index].filename = file.name || null;
     setDocuments(updatedDocuments);
   };
+
+  useEffect(() => {
+    console.log(documents);
+  }, [documents]);
 
   const docTypes = [
     "Client Photo",
@@ -81,9 +94,9 @@ export default function AddClientDocuments() {
     return docTypes.filter((type) => !selectedTypes.includes(type));
   };
 
-  const isAddMoreDisabled = documents.every(
-    (doc) => doc.document === "" && doc.document !== "Select the file"
-  );
+  // const isAddMoreDisabled = documents.every(
+  //   (doc) => doc.document === "" && doc.document !== "Select the file"
+  // );
 
   return (
     <div className="w-full h-full flex justify-center">
@@ -118,6 +131,7 @@ export default function AddClientDocuments() {
               </label>
               <input
                 type="file"
+                accept=".jpg,.jpeg,.png,.pdf"
                 id={`file-${i}`}
                 style={{ display: "none" }}
                 placeholder="Client Id"
@@ -130,23 +144,26 @@ export default function AddClientDocuments() {
                   border: "1px dashed",
                   lineHeight: "55px",
                   cursor: "pointer",
+                  textWrap: "nowrap",
+                  overflow: "hidden",
+                  width: "300px",
+                  textOverflow: "ellipsis",
                 }}
               >
-                Select the file
+                {doc.filename}
               </label>
             </div>
           </div>
         ))}
 
-        {!isAddMoreDisabled && (
-          <button
-            type="button"
-            onClick={addDocuments}
-            className="text-xl text-blue-500"
-          >
-            Add More
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={addDocuments}
+          className="text-xl text-blue-500"
+        >
+          Add More
+        </button>
+
         <div className="w-full flex flex-col my-2">
           <label className="text-xl ml-1">Extra info (Optional)</label>
           <textarea

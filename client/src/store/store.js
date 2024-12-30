@@ -10,6 +10,10 @@ export const useClientStore = create((set) => ({
 }));
 
 export let useClientDocumentsStore = create((set) => ({
-  clientDocs: [],
+  clientDocs: {
+    userId: "",
+    document: [],
+    info: "",
+  },
   setClientDocs: (data) => set({ clientDocs: data }),
 }));

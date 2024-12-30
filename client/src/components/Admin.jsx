@@ -8,6 +8,7 @@ import {
   faUserFriends,
   faUsers,
   faSyncAlt,
+  faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
@@ -62,7 +63,7 @@ export default function Admin() {
 
   let [originalClientData, setOriginalClientData] = useState([]);
 
-  const [isLoading, setLoading] = useState(false);
+  let [isLoading, setLoading] = useState(false);
   const setClientData = useClientStore((state) => state.setClientData);
   const clientData = useClientStore((state) => state.clientData);
   const removeClient = useClientStore((state) => state.removeClient);
@@ -178,6 +179,13 @@ export default function Admin() {
               title="Refresh"
               onClick={Refresh}
             />
+            <Link
+              to={"/addClient"}
+              className={styles.button}
+              style={{ fontSize: "20px", padding: "5px", marginLeft: "5px" }}
+            >
+              Add Client <FontAwesomeIcon icon={faUserPlus} />
+            </Link>
           </div>
         )}
         <img

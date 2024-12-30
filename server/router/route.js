@@ -9,7 +9,7 @@ import mongoose from "mongoose";
 import fs from "fs";
 import path from "path";
 import Files from "../model/files.js";
-
+import { fileURLToPath } from "url";
 const router = Router();
 
 // authenticate user
@@ -67,7 +67,8 @@ const storage = multer.diskStorage({
     }
   },
   filename: (req, file, cb) => {
-    cb(null, Date.now() + "-" + file.originalname);
+    const ext = path.extname(file.originalname);
+    cb(null, "document_" + Date.now() + ext);
   },
 });
 
@@ -170,7 +171,7 @@ router
         email,
         mobile,
         caseType,
-        state,
+        dob,
         city,
         village,
         pincode,
@@ -184,7 +185,8 @@ router
         email,
         mobile,
         caseType,
-        address: { state, city, village, pincode },
+        dob,
+        address: { city, village, pincode },
       });
 
       const savedClient = await client.save();
@@ -288,7 +290,6 @@ router
   .get(authorize(["admin", "employee"]), async (rqe, res) => {
     try {
       const clientData = await Client.find();
-
       if (clientData.length === 0) {
         return res.status(404).json({ error: "No clients found" });
       }
@@ -313,6 +314,13 @@ router.route("/clientDoc").get(authorize("admin"), async (req, res) => {
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
+});
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+router.route("/files/:filename").get((req, res) => {
+  const { filename } = req.params;
+  const filePath = path.resolve(__dirname, "../uploads", filename);
+  return res.sendFile(filePath);
 });
 
 // Delete
@@ -346,4 +354,16 @@ router
     }
   });
 
+router.route("/download/:filename").get((req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.resolve(__dirname, "../uploads", filename);
+
+  // Ensure the file exists before sending
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error("File download error:", err);
+      res.status(404).send("File not found!");
+    }
+  });
+});
 export default router;

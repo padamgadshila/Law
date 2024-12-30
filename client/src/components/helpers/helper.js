@@ -97,3 +97,32 @@ export let getClientDocuments = async (cid) => {
     throw error;
   }
 };
+
+export const FileView = ({ filename }) => {
+  const handleViewFile = () => {
+    window.open(`${process.env.REACT_APP_SERVER_DOMAIN}/${filename}`, "_blank");
+  };
+
+  return (
+    <button
+      className="text-blue-500 text-center hover:underline"
+      onClick={handleViewFile}
+    >
+      View
+    </button>
+  );
+};
+
+export const FileDownload = ({ filename }) => {
+  return (
+    <a
+      href={`${process.env.REACT_APP_SERVER_DOMAIN}/api/download/${filename}`}
+      download={filename}
+      className="text-green-500 hover:underline"
+      target="_blank"
+      rel="noreferrer"
+    >
+      Download
+    </a>
+  );
+};
