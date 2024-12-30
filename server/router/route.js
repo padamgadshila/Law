@@ -366,4 +366,61 @@ router.route("/download/:filename").get((req, res) => {
     }
   });
 });
+
+router.route("/clientData").get(authorize("admin"), async (req, res) => {
+  try {
+    const id = req.query.id;
+    const cid = getId(id);
+    const clientData = await Client.findById(cid);
+
+    if (!clientData) {
+      return res.status(404).json({ error: "Client Not found..!" });
+    }
+    return res.status(200).json({ message: "Client Found..!", clientData });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+});
+
+router.route("/updateClient").post(authorize("admin"), async (req, res) => {
+  try {
+    const {
+      _id,
+      cid,
+      fname,
+      mname,
+      lname,
+      email,
+      mobile,
+      caseType,
+      dob,
+      city,
+      village,
+      pincode,
+    } = req.body;
+    const id = getId(_id);
+    const UpdateClient = await Client.findByIdAndUpdate(id, {
+      cid,
+      fname,
+      mname,
+      lname,
+      email,
+      mobile,
+      caseType,
+      dob,
+      address: {
+        city,
+        village,
+        pincode,
+      },
+    });
+
+    return res.status(200).json({ message: "Client details updated..!" });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({ error: "Server Error" });
+  }
+});
+
 export default router;

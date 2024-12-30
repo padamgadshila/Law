@@ -106,7 +106,7 @@ export default function AdminClient({
           </button>
         </td>
         <td className="px-4 py-2 border text-center text-green-500 cursor-pointer hover:underline">
-          <Link to={`/view?id=${data._id}`}>Edit</Link>
+          <Link to={`/edit?id=${data._id}`}>Edit</Link>
         </td>
         <td className="px-4 py-2 border text-center text-red-500 cursor-pointer hover:underline">
           <button onClick={() => deleteClient(data._id)}>Delete</button>

@@ -13,6 +13,7 @@ import Admin from "./components/Admin";
 import { AuthorizeUser } from "./middllewares/auth";
 import Employee from "./components/Employee";
 import Session from "./components/Session";
+import EditClient from "./components/EditClient";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +72,15 @@ const router = createBrowserRouter([
     ),
   },
   { path: "/expired", element: <Session /> },
+
+  {
+    path: "/edit",
+    element: (
+      <AuthorizeUser>
+        <EditClient />
+      </AuthorizeUser>
+    ),
+  },
 ]);
 
 function App() {

@@ -126,3 +126,27 @@ export const FileDownload = ({ filename }) => {
     </a>
   );
 };
+
+export const getOneClientBYId = async (id) => {
+  try {
+    return await axios.get(`/api/clientData?id=${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const updateClient = async (values) => {
+  try {
+    return await axios.post("/api/updateClient", values, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
