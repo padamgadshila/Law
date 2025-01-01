@@ -35,7 +35,7 @@ router
   .route("/addClientDocument")
   .post(authorize(["admin", "employee"]), uploadFields, addClientDocument);
 router.route("/getClients").get(authorize(["admin", "employee"]), getClients);
-router.route("/clientDoc").get(authorize("admin"), clientDoc);
+router.route("/clientDoc").get(authorize(["admin", "employee"]), clientDoc);
 router.route("/files/:filename").get(fileView);
 router
   .route("/deleteClient")

@@ -206,6 +206,7 @@ export let addClient = async (req, res) => {
       caseType,
       dob,
       address: { city, village, pincode },
+      fileUploaded: "No",
     });
 
     const savedClient = await client.save();
@@ -243,6 +244,12 @@ export let addClientDocument = async (req, res) => {
   try {
     const { cid, info } = req.body;
     const id = getId(cid);
+
+    const update = await Client.findOneAndUpdate(
+      { _id: id },
+      { fileUploaded: "Yes" }
+    );
+
     const docs = [];
     for (let i = 0; i <= 8; i++) {
       const documentTypeKey = `documentType-${i}`;

@@ -95,20 +95,35 @@ export default function AdminClient({
         <td className="px-4 py-2 border">{data.address.pincode || "-"}</td>
         <td className="px-4 py-2 border">{data.status || "-"}</td>
         <td className="px-4 py-2 border text-center text-blue-500 cursor-pointer hover:underline">
-          <button
-            onClick={() => {
-              getDocuments(data._id);
-            }}
-          >
-            View
-          </button>
+          {data.fileUploaded === "Yes" ? (
+            <button
+              onClick={() => {
+                getDocuments(data._id);
+              }}
+            >
+              View
+            </button>
+          ) : (
+            <Link
+              className="text-green-500"
+              to={`/addClientDocuments?id=${data._id}`}
+            >
+              Add
+            </Link>
+          )}
         </td>
-        <td className="px-4 py-2 border text-center text-green-500 cursor-pointer hover:underline">
-          <Link to={`/edit?id=${data._id}`}>Edit</Link>
-        </td>
-        <td className="px-4 py-2 border text-center text-red-500 cursor-pointer hover:underline">
-          <button onClick={() => deleteClient(data._id)}>Delete</button>
-        </td>
+        {localStorage.getItem("role") === "admin" ? (
+          <>
+            <td className="px-4 py-2 border text-center text-green-500 cursor-pointer hover:underline">
+              <Link to={`/edit?id=${data._id}`}>Edit</Link>
+            </td>
+            <td className="px-4 py-2 border text-center text-red-500 cursor-pointer hover:underline">
+              <button onClick={() => deleteClient(data._id)}>Delete</button>
+            </td>
+          </>
+        ) : (
+          ""
+        )}
       </tr>
     );
   };
@@ -195,12 +210,16 @@ export default function AdminClient({
             <th className="bg-[#fd25d6] px-4 py-2 w-[100px] ">Pincode</th>
             <th className="bg-[#fd25d6] px-4 py-2 w-[100px] ">Status</th>
             <th className="bg-[#fd25d6] px-4 py-2 w-[120px] ">Documents</th>
-            <th
-              className="bg-[#fd25d6] px-4 py-2 w-[160px] text-center  rounded-tr-xl"
-              colSpan={2}
-            >
-              Action
-            </th>
+            {localStorage.getItem("role") === "admin" ? (
+              <th
+                className="bg-[#fd25d6] px-4 py-2 w-[160px] text-center  rounded-tr-xl"
+                colSpan={2}
+              >
+                Action
+              </th>
+            ) : (
+              ""
+            )}
           </tr>
         </thead>
         <tbody>

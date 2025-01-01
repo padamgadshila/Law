@@ -28,7 +28,12 @@ let Profile = () => {
         const { data, status } = await updateProfile(values);
         if (status === 200) {
           toast.success(data.message);
-          navigate("/admin");
+          const role = localStorage.getItem("role");
+          if (role === "admin") {
+            navigate("/admin");
+          } else if (role === "employee") {
+            navigate("/employee");
+          }
         }
       } catch (error) {
         if (error.response) {

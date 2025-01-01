@@ -3,12 +3,15 @@ import styles from "../css/style.module.css";
 import { useFormik } from "formik";
 import { addClientDocuments } from "./helpers/helper";
 import toast, { Toaster } from "react-hot-toast";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 
 export default function AddClientDocuments() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const id = location.search.split("=")[1];
 
   const [documents, setDocuments] = useState([
     {
@@ -21,7 +24,7 @@ export default function AddClientDocuments() {
   const formik = useFormik({
     initialValues: {
       info: "",
-      cid: localStorage.getItem("cid"),
+      cid: id,
     },
     validateOnBlur: false,
     validateOnChange: false,
@@ -33,7 +36,6 @@ export default function AddClientDocuments() {
         });
         if (status === 201) {
           toast.success(data.message);
-          localStorage.removeItem("cid");
           let role = localStorage.getItem("role");
 
           if (role === "admin") {
@@ -176,7 +178,9 @@ export default function AddClientDocuments() {
         </button>
         {localStorage.getItem("role") === "admin" ? (
           <Link
-            to={"/admin"}
+            to={
+              localStorage.getItem("role") === "admin" ? "/admin" : "/employee"
+            }
             className="mt-4 text-[20px] font-bold text-blue-500 "
           >
             <FontAwesomeIcon icon={faArrowLeft} className="mr-3" />

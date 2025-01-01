@@ -11,7 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
-import AdminClient from "./AdminClient";
+import Client from "./Client";
 import { getClients } from "./helpers/helper";
 import { useClientStore, useEmployeeStore } from "../store/store";
 import AdminEmployee from "./AdminEmployee";
@@ -263,7 +263,7 @@ export default function Admin() {
           )}
           {activeTab === 2 && (
             <div className="absolute w-full h-full px-2">
-              <AdminClient
+              <Client
                 clientData={clientData}
                 setClientData={setClientData}
                 removeClient={removeClient}

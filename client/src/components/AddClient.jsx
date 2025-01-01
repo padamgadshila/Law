@@ -27,8 +27,7 @@ export default function AddClient() {
         let { data, status } = await addClientInfo(values);
         if (status === 201) {
           toast.success("Client Info saved..!");
-          localStorage.setItem("cid", data.cid);
-          navigate("/addClientDocuments");
+          navigate(`/addClientDocuments?id=${data.cid}`);
         }
       } catch (error) {
         toast.error("Something went wrong");

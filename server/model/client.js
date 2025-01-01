@@ -15,6 +15,7 @@ const clientSchema = new mongoose.Schema({
     pincode: { type: String },
   },
   status: { type: String },
+  fileUploaded: { type: String },
   createdAt: { type: Date, default: Date.now },
 });
 
