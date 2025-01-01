@@ -33,6 +33,7 @@ export default function Login() {
           toast.success(data.message);
           document.cookie = `token=${data.token}; path=/; SameSite=Strict;`;
           localStorage.setItem("role", userType);
+          localStorage.setItem("id", data.user.id);
           if (userType === "admin") {
             navigate("/admin");
           } else if (userType === "employee") {

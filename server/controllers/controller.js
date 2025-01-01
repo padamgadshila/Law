@@ -167,8 +167,14 @@ export let addEmployee = async (req, res) => {
 
     return res.status(201).json({
       message: "Employee added..!",
-      username: username,
-      password: password,
+      mail: {
+        username: username,
+        userEmail: email,
+        text: `Dear ${fname} ${lname}, <br> Below is your login information <br>username = <b>${username}</b> <br>
+        password = <b>${password}</b> <br> use it for logging in into your employee dashboard.
+        `,
+        subject: "Registered Successfully..!",
+      },
     });
   } catch (error) {
     return res.status(500).json({ error: "Server error" });
@@ -341,7 +347,22 @@ export let getEmployee = async (req, res) => {
     return res.status(500).json({ error: "Server Error..!" });
   }
 };
+export let getProfile = async (req, res) => {
+  try {
+    const { id, role } = req.query;
+    const userId = getId(id);
 
+    const userData = await User.findOne({ _id: userId, role: role }).select(
+      "-password"
+    );
+    if (!userData) {
+      return res.status(404).json({ error: "Not found..!" });
+    }
+    return res.status(200).json({ userData });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error..!" });
+  }
+};
 export let employeeDataById = async (req, res) => {
   try {
     const { id, role } = req.query;
@@ -411,6 +432,34 @@ export let updateClient = async (req, res) => {
     return res.status(200).json({ message: "Client details updated..!" });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
+  }
+};
+export let updateProfile = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const userId = getId(id);
+    const { fname, lname, email, mobile, role, username, profilePic } =
+      req.body;
+
+    const updateInfo = await User.findOneAndUpdate(
+      { _id: userId, role: role },
+      {
+        fname,
+        lname,
+        email,
+        mobile,
+        username,
+        profilePic,
+      }
+    );
+
+    console.log(updateInfo);
+
+    return res.status(200).json({ message: "Profile updated..!" });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({ error: "Server Error..!" });
   }
 };
 // DELETE ROUTES

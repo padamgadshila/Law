@@ -9,7 +9,7 @@ let generate = (fname) => {
   });
 
   let username =
-    fname +
+    fname.toLowerCase() +
     optGenerator.generate(4, {
       lowerCaseAlphabets: false,
       upperCaseAlphabets: false,

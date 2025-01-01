@@ -16,11 +16,14 @@ import {
   fileView,
   getClients,
   getEmployee,
+  getProfile,
   login,
   updateClient,
   updateEmployee,
+  updateProfile,
   uploadFields,
 } from "../controllers/controller.js";
+import { Mail } from "../controllers/mailing.system.js";
 const router = Router();
 
 router.route("/auth").post(authorize(["admin", "employee"]), auth);
@@ -48,4 +51,10 @@ router.route("/deleteEmployee").delete(authorize("admin"), deleteEmployee);
 router.route("/employeeData").get(authorize("admin"), employeeDataById);
 
 router.route("/updateEmployee").put(authorize("admin"), updateEmployee);
+router.route("/profile").get(authorize(["admin", "employee"]), getProfile);
+router
+  .route("/updateProfile")
+  .post(authorize(["admin", "employee"]), updateProfile);
+
+router.route("/sendMail").post(Mail);
 export default router;

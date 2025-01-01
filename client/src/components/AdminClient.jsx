@@ -93,6 +93,7 @@ export default function AdminClient({
         <td className="px-4 py-2 border">{data.address.city || "-"}</td>
         <td className="px-4 py-2 border">{data.address.village || "-"}</td>
         <td className="px-4 py-2 border">{data.address.pincode || "-"}</td>
+        <td className="px-4 py-2 border">{data.status || "-"}</td>
         <td className="px-4 py-2 border text-center text-blue-500 cursor-pointer hover:underline">
           <button
             onClick={() => {
@@ -192,6 +193,7 @@ export default function AdminClient({
             <th className="bg-[#fd25d6] px-4 py-2 w-[150px] ">City</th>
             <th className="bg-[#fd25d6] px-4 py-2 w-[150px] ">Village</th>
             <th className="bg-[#fd25d6] px-4 py-2 w-[100px] ">Pincode</th>
+            <th className="bg-[#fd25d6] px-4 py-2 w-[100px] ">Status</th>
             <th className="bg-[#fd25d6] px-4 py-2 w-[120px] ">Documents</th>
             <th
               className="bg-[#fd25d6] px-4 py-2 w-[160px] text-center  rounded-tr-xl"

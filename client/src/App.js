@@ -15,6 +15,7 @@ import Employee from "./components/Employee";
 import Session from "./components/Session";
 import EditClient from "./components/EditClient";
 import EditEmployee from "./components/EditEmployee";
+import UpdateProfile from "./components/UpdateProfile";
 
 const router = createBrowserRouter([
   {
@@ -87,6 +88,14 @@ const router = createBrowserRouter([
     element: (
       <AuthorizeUser>
         <EditEmployee />
+      </AuthorizeUser>
+    ),
+  },
+  {
+    path: "/profile",
+    element: (
+      <AuthorizeUser>
+        <UpdateProfile />
       </AuthorizeUser>
     ),
   },

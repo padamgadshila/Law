@@ -208,3 +208,35 @@ export const updateEmployee = async (values) => {
     throw error;
   }
 };
+
+export let getProfileInfo = async (id, role) => {
+  try {
+    return await axios.get(`/api/profile?id=${id}&role=${role}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let updateProfile = async (values) => {
+  try {
+    return await axios.post(`/api/updateProfile?id=${values._id}`, values, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let sendMail = async (data) => {
+  try {
+    return await axios.post("/api/sendMail", data);
+  } catch (error) {
+    throw error;
+  }
+};

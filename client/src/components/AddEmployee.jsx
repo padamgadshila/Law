@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../css/style.module.css";
 import { useFormik } from "formik";
-import { addEmployee } from "./helpers/helper";
+import { addEmployee, sendMail } from "./helpers/helper";
 import { toast, Toaster } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 export default function AddEmployee() {
@@ -19,10 +19,17 @@ export default function AddEmployee() {
     validateOnChange: false,
     onSubmit: async (values) => {
       try {
-        const { data, status } = await addEmployee(values);
-        if (status === 201) {
-          toast.success(data.message);
-          navigate("/admin");
+        const addEmployeeResponse = await addEmployee(values);
+        if (addEmployeeResponse.status === 201) {
+          toast.success(addEmployeeResponse.data.message);
+          await toast.promise(sendMail(addEmployeeResponse.data.mail), {
+            loading: "Sending email...",
+            success: "Email sent successfully!",
+            error: "Failed to send email.",
+          });
+          setInterval(() => {
+            navigate("/admin");
+          }, 2200);
         }
       } catch (error) {
         if (error.response) {

@@ -1,30 +1,30 @@
 import React, { useEffect, useState } from "react";
-import avatar from "./images/paddy.jpg";
 import styles from "../css/style.module.css";
+import avatar from "./images/profile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faRightFromBracket,
-  faGear,
-  faUserFriends,
-  faUsers,
+  faTachometerAlt,
+  faUserTie,
+  faUser,
   faSyncAlt,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import AdminClient from "./AdminClient";
 import { getClients } from "./helpers/helper";
 import { useClientStore, useEmployeeStore } from "../store/store";
 import AdminEmployee from "./AdminEmployee";
+import { Profile } from "./Profile";
 export default function Admin() {
+  const navigate = useNavigate();
   let [activeTab, setActiveTab] = useState(() => {
     return parseInt(localStorage.getItem("activeTab")) || 0;
   });
-
   let tabs = [
-    { name: "Dashboard", icon: faGear },
-    { name: "Employee", icon: faUsers },
-    { name: "Client", icon: faUserFriends },
+    { name: "Dashboard", icon: faTachometerAlt },
+    { name: "Employee", icon: faUserTie },
+    { name: "Client", icon: faUser },
   ];
 
   let [disableFilter, setDisableFilter] = useState(false);
@@ -51,19 +51,9 @@ export default function Admin() {
 
   // Local
   useEffect(() => {
-    const storedTab = localStorage.getItem("activeTab");
-    const storedCid = localStorage.getItem("cid");
-    if (storedTab !== null) {
-      setActiveTab(Number(storedTab));
-    }
-    if (storedCid !== null) {
-      localStorage.removeItem("cid");
-    }
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem("activeTab", activeTab);
   }, [activeTab]);
+
   let [Totals, setTotals] = useState([
     { name: "employees", total: "" },
     { name: "clients", total: "" },
@@ -111,8 +101,33 @@ export default function Admin() {
     }
   }, [query]);
 
-  useEffect(() => {});
+  useEffect(() => {
+    setTotals([
+      { name: "employees", total: employeeData.length },
+      { name: "clients", total: clientData.length },
+    ]);
+  }, [employeeData, clientData]);
 
+  let Card = ({ title, count }) => {
+    return (
+      <div className="border w-[250px] h-[110px] rounded-2xl flex flex-col items-center py-5 shadow-md">
+        <h1 className="font-bold text-4xl">{count || 0}</h1>
+        <span className="text-2xl">{title}</span>
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    const storedTab = localStorage.getItem("activeTab");
+    const storedCid = localStorage.getItem("cid");
+    if (storedTab !== null) {
+      setActiveTab(Number(storedTab));
+    }
+    if (storedCid !== null) {
+      localStorage.removeItem("cid");
+    }
+  }, []);
+  let [profile, setProfile] = useState({});
   return (
     <div className="w-full h-screen">
       <Toaster />
@@ -125,42 +140,19 @@ export default function Admin() {
             : "top-[120px] opacity-0 invisible"
         }`}
       >
-        <div className={styles.profile}>
-          <img
-            src={avatar}
-            alt=""
-            className="w-[150px] aspect-square rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 border-4 border-white"
-          />
-        </div>
-        <div className="mt-[60px] p-5 flex flex-col items-center">
-          <h1 className="text-4xl font-bold">username</h1>
-          <span className="text-2xl">
-            <b>Role</b>: Admin
-          </span>
-          <div className="flex items-center gap-1">
-            <Link
-              to={"/profile"}
-              className="flex items-center w-[150px] text-center bg-[#fd25d6] p-3 rounded-r-md rounded-l-lg text-white"
-            >
-              <FontAwesomeIcon className="text-xl mr-3" icon={faGear} />
-              <span className="text-xl font-bold">Profile</span>
-            </Link>
-            <Link
-              to={"/logout"}
-              className="flex items-center w-[150px] text-center bg-[#fc5543] p-3 rounded-l-md rounded-r-lg text-white"
-            >
-              <FontAwesomeIcon
-                className="text-xl mr-3"
-                icon={faRightFromBracket}
-              />
-              <span className="text-xl font-bold">Logout</span>
-            </Link>
-          </div>
-        </div>
+        <Profile
+          toast={toast}
+          Link={Link}
+          profile={profile}
+          setProfile={setProfile}
+          navigate={navigate}
+        />
       </div>
 
       <div className={styles.nav}>
-        <h1 className="ml-6 font-bold text-2xl text-black">Admin Name</h1>
+        <h1 className="ml-6 font-bold text-2xl text-black">
+          {profile.username || "Admin"}
+        </h1>
         {activeTab === 1 && (
           <Link
             to={"/addEmployee"}
@@ -216,7 +208,7 @@ export default function Admin() {
           </div>
         )}
         <img
-          src={avatar}
+          src={profile.profilePic || avatar}
           alt="profile pic"
           className="w-[50px] h-[50px] rounded-full mr-6 cursor-pointer"
           onClick={() => {
@@ -253,15 +245,10 @@ export default function Admin() {
         {/* Content Area */}
         <div className="relative overflow-y-scroll w-[calc(100%-190px)] h-[calc(100vh-70px)] ml-3 border-gray-300">
           {activeTab === 0 && (
-            <div className="absolute w-full h-full p-5 flex gap-5">
-              <div className="border w-[250px] h-[110px] rounded-2xl flex flex-col items-center py-5 shadow-md">
-                <h1 className="font-bold text-4xl">10</h1>
-                <span className="text-2xl">Total Employee</span>
-              </div>
-              <div className="border w-[250px] h-[110px] rounded-2xl flex flex-col items-center py-5 shadow-md">
-                <h1 className="font-bold text-4xl">200</h1>
-                <span className="text-2xl">Total Clients</span>
-              </div>
+            <div className="flex gap-3 mt-2">
+              {Totals.map((v, i) => (
+                <Card title={`Total ${v.name}`} key={i} count={v.total} />
+              ))}
             </div>
           )}
           {activeTab === 1 && (
