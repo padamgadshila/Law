@@ -9,6 +9,7 @@ import path from "path";
 import Files from "../model/files.js";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
+import { getOtp } from "../helpers/otpGenerator.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -282,7 +283,26 @@ export let addClientDocument = async (req, res) => {
     return res.status(500).json({ error: "Server Error" });
   }
 };
+export let sendOtp = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const code = getOtp();
 
+    const check = await User.findOne({ email: email });
+    if (!check) {
+      return res.status(404).json({ error: "Email not found..!" });
+    }
+    req.otp = {
+      email: email,
+      otp: code,
+      valid: true,
+    };
+    next();
+    return res.status(200).json({ message: "Otp sent..!" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
 // GET ROUTES
 export let getClients = async (req, res) => {
   try {

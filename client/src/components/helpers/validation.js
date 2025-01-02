@@ -1,6 +1,6 @@
 import { toast } from "react-hot-toast";
 
-let loginValidation = (values) => {
+export let loginValidation = (values) => {
   const errors = {};
 
   if (!values.username || values.username === " ") {
@@ -19,5 +19,11 @@ let loginValidation = (values) => {
   return errors;
 };
 
-export default loginValidation;
-// make a custom hook for getting data,status,message from server
+export let emailValidation = (values) => {
+  const errors = {};
+  if (!values.email || !values.email === " ") {
+    errors.email = toast.error("Email cannot not be blank..!");
+  }
+
+  return errors;
+};

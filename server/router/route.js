@@ -18,6 +18,7 @@ import {
   getEmployee,
   getProfile,
   login,
+  sendOtp,
   updateClient,
   updateEmployee,
   updateProfile,
@@ -57,4 +58,6 @@ router
   .post(authorize(["admin", "employee"]), updateProfile);
 
 router.route("/sendMail").post(Mail);
+
+router.route("/sendOtp").post(sendOtp, Mail);
 export default router;

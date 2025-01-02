@@ -5,11 +5,14 @@ import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import { emailValidation } from "./helpers/validation";
+import { Toaster } from "react-hot-toast";
 export default function Email() {
   const formik = useFormik({
     initialValues: {
       email: "",
     },
+    validate: emailValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
@@ -18,6 +21,7 @@ export default function Email() {
   });
   return (
     <div className="w-full h-screen flex items-center justify-center">
+      <Toaster />
       <form
         className="border w-[450px] h-auto p-5 rounded-md shadow-md"
         onSubmit={formik.handleSubmit}

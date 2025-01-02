@@ -5,7 +5,7 @@ import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-regular-svg-icons";
 import { Toaster, toast } from "react-hot-toast";
-import loginValidation from "./helpers/validation";
+import { loginValidation } from "./helpers/validation";
 import { login } from "./helpers/helper";
 
 export default function Login() {

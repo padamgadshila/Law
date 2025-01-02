@@ -6,7 +6,6 @@ import {
   faUser,
   faSyncAlt,
   faUserPlus,
-  faNewspaper,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
@@ -19,10 +18,7 @@ export default function Employee() {
   let [activeTab, setActiveTab] = useState(() => {
     return parseInt(localStorage.getItem("activeTabE")) || 0;
   });
-  let tabs = [
-    { name: "Client", icon: faUser },
-    { name: "Documents", icon: faNewspaper },
-  ];
+  let tabs = [{ name: "Client", icon: faUser }];
 
   let [disableFilter, setDisableFilter] = useState(false);
   let [showProfile, setShowProfile] = useState(false);

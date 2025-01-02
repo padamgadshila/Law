@@ -240,3 +240,11 @@ export let sendMail = async (data) => {
     throw error;
   }
 };
+
+export let sendOtp = async (values) => {
+  try {
+    return await axios.post("/api/sendOtp", values.email);
+  } catch (error) {
+    throw error;
+  }
+};

@@ -42,6 +42,37 @@ export default function AdminEmployee({
       }
     }
   };
+  const TableHeader = ({ isAdmin }) => (
+    <thead className="sticky top-0">
+      <tr className="text-white">
+        {[
+          "Employee Id",
+          "First Name",
+          "Middle Name",
+          "Username",
+          "Email",
+          "Mobile",
+        ].map((header, index) => (
+          <th
+            key={index}
+            className={`bg-[#fd25d6] px-4 py-2 ${
+              index === 0 ? "rounded-tl-xl" : ""
+            } ${index === 6 && !isAdmin ? "rounded-tr-xl" : ""}`}
+          >
+            {header}
+          </th>
+        ))}
+        {isAdmin && (
+          <th
+            colSpan={2}
+            className="bg-[#fd25d6] px-4 py-2 text-center rounded-tr-xl"
+          >
+            Action
+          </th>
+        )}
+      </tr>
+    </thead>
+  );
 
   let TableRows = ({ e, i }) => {
     return (
@@ -64,21 +95,7 @@ export default function AdminEmployee({
 
   return (
     <table className="border-collapse w-full text-left table-auto">
-      <thead className="">
-        <tr className="text-white">
-          <th className="bg-[#fd25d6] px-4 py-2  rounded-tl-xl">First Name</th>
-          <th className="bg-[#fd25d6] px-4 py-2 ">Last Name</th>
-          <th className="bg-[#fd25d6] px-4 py-2 ">Username</th>
-          <th className="bg-[#fd25d6] px-4 py-2 ">Email</th>
-          <th className="bg-[#fd25d6] px-4 py-2 ">Mobile</th>
-          <th
-            className="bg-[#fd25d6] px-4 py-2 text-center  rounded-tr-xl"
-            colSpan={2}
-          >
-            Action
-          </th>
-        </tr>
-      </thead>
+      <TableHeader isAdmin={"admin"} />
       <tbody>
         {employeeData.map((e, i) => (
           <TableRows e={e} key={i} />
