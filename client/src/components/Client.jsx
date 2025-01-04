@@ -18,48 +18,110 @@ export default function AdminClient({
   toast,
   setOriginalClientData,
 }) {
-  const printDocument = (data) => {
+  const clientDocs = useClientDocumentsStore((state) => state.clientDocs);
+  const setClientDocs = useClientDocumentsStore((state) => state.setClientDocs);
+  const printDocument = async (e) => {
     const printableContent = `
-    <html>
-      <head>
-        <title>Print Document</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-          }
-          th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-          }
-          th {
-            background-color: #f4f4f4;
-          }
-        </style>
-      </head>
-      <body>
-        <h1>Client Details</h1>
-        <table>
-          <tr><th>Client Id</th><td>${data.cid || "-"}</td></tr>
-          <tr><th>First Name</th><td>${data.fname || "-"}</td></tr>
-          <tr><th>Middle Name</th><td>${data.mname || "-"}</td></tr>
-          <tr><th>Last Name</th><td>${data.lname || "-"}</td></tr>
-          <tr><th>Email</th><td>${data.email || "-"}</td></tr>
-          <tr><th>Mobile</th><td>${data.mobile || "-"}</td></tr>
-          <tr><th>Case Type</th><td>${data.caseType || "-"}</td></tr>
-          <tr><th>Date of Birth</th><td>${data.dob || "-"}</td></tr>
-          <tr><th>City</th><td>${data.address?.city || "-"}</td></tr>
-          <tr><th>Village</th><td>${data.address?.village || "-"}</td></tr>
-          <tr><th>Pincode</th><td>${data.address?.pincode || "-"}</td></tr>
-          <tr><th>Status</th><td>${data.status || "-"}</td></tr>
-        </table>
-      </body>
-    </html>
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Information</title>
+  <style>
+    /* General Styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+    }
+    .container {
+      width: 8in;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+    }
+    .heading {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 24px;
+      text-align: center;
+      color: #000;
+    }
+    .subheading {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 20px 0 10px;
+    }
+    .info-row {
+      display: flex;
+      align-items: center;
+      
+    }
+    .info-item {
+    display:block;
+      padding: 10px;
+      border: 1px solid #ccc;
+      width:100%;
+    }
+
+    .documents-section {
+      margin-top: 20px;
+    }
+    .document-item {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 class="heading">Client Information</h1>
+    <br />
+    <h2 class="subheading">Personal Information</h2>
+    <div class="info-row">
+      <span class="info-item">
+        <b>Client Id: </b> ${e.cid}
+      </span>
+      <span class="info-item">
+        <b>Full name: </b> ${e.fname} ${e.mname} ${e.lname}
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="info-item">
+        <b>Mobile no: </b> ${e.mobile}
+      </span>
+      <span class="info-item">
+        <b>Email: </b> ${e.email}
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="info-item">
+        <b>Dob: </b> ${e.dob}
+      </span>
+      <span class="info-item">
+        <b>Address: </b> ${e.address?.city}, ${e.address?.village}, ${e.address?.pincode}
+      </span>
+    </div>
+    <div class="info-row">
+      <span class="info-item">
+        <b>Case Type: </b> ${e.caseType}
+      </span>
+      <span class="info-item">
+        <b>Documents Attached: </b> ${e.fileUploaded}
+      </span>
+    </div>
+
+    <h2 class="subheading">Documents Attached</h2>
+    <div class="documents-section">
+      
+    </div>
+  </div>
+</body>
+</html>
+
   `;
 
     const printWindow = window.open("", "_blank");
@@ -250,8 +312,7 @@ export default function AdminClient({
       </tbody>
     );
   };
-  const clientDocs = useClientDocumentsStore((state) => state.clientDocs);
-  const setClientDocs = useClientDocumentsStore((state) => state.setClientDocs);
+
   const [table, showTable] = useState(false);
 
   const getClientData = async () => {
