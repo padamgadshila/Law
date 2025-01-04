@@ -6,6 +6,8 @@ import {
   faUser,
   faSyncAlt,
   faUserPlus,
+  faClose,
+  faBars,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
@@ -19,7 +21,7 @@ export default function Employee() {
     return parseInt(localStorage.getItem("activeTabE")) || 0;
   });
   let tabs = [{ name: "Client", icon: faUser }];
-
+  let [showSidebar, setShowSidebar] = useState(false);
   let [disableFilter, setDisableFilter] = useState(false);
   let [showProfile, setShowProfile] = useState(false);
 
@@ -118,10 +120,19 @@ export default function Employee() {
         />
       </div>
 
-      <div className={styles.nav}>
-        <h1 className="ml-6 font-bold text-2xl text-black">
-          {profile.username || "Employee"}
-        </h1>
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white shadow-lg flex items-center justify-between w-full mx-auto h-[70px]">
+        <div className="flex items-center">
+          <FontAwesomeIcon
+            icon={showSidebar ? faClose : faBars}
+            className="text-2xl ml-7 cursor-pointer"
+            onClick={() => {
+              showSidebar ? setShowSidebar(false) : setShowSidebar(true);
+            }}
+          />
+          <h1 className="ml-6 font-bold text-2xl">
+            {profile.username || "Admin"}
+          </h1>
+        </div>
         {activeTab === 0 && (
           <div className="flex items-center gap-1">
             <input
@@ -130,14 +141,14 @@ export default function Employee() {
               value={query.search}
               onChange={handleOnChange}
               name="search"
-              className="bg-gray-100 w-[250px] h-[50px] rounded-l-xl outline-none pl-3 text-xl focus:border border-[#fd25d6]"
+              className="bg-white text-black w-[250px] h-[50px] rounded-l-xl outline-none pl-3 text-xl"
             />
             <select
               onClick={() => setDisableFilter(true)}
               value={query.filter}
               onChange={handleOnChange}
               name="filter"
-              className="bg-gray-100 cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px] focus:border border-[#fd25d6] rounded-r-xl"
+              className="bg-white text-black cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px]  rounded-r-xl"
             >
               <option disabled={disableFilter}>Filter</option>
               {filters.map((o, i) => (
@@ -155,8 +166,7 @@ export default function Employee() {
             />
             <Link
               to={"/addClient"}
-              className={styles.button}
-              style={{ fontSize: "20px", padding: "5px", marginLeft: "5px" }}
+              className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-md px-5 py-2"
             >
               Add Client <FontAwesomeIcon icon={faUserPlus} />
             </Link>
@@ -175,13 +185,17 @@ export default function Employee() {
       {/* Main Page */}
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-[160px] h-[calc(100vh-70px)] ml-3  p-2">
-          <ul>
+        <div
+          className={`bg-[#2d3748] z-10 w-[170px] h-[calc(100vh-70px)] fixed p-2 transform transition-all duration-300 ease-in-out  ${
+            showSidebar ? " translate-x-0" : "translate-x-[-100%]"
+          }`}
+        >
+          <ul className="text-white">
             {tabs.map((tab, i) => (
               <li
                 key={i}
-                className={`flex items-center my-2 p-1 rounded-md cursor-pointer ${
-                  activeTab === i ? "bg-[#fd25d6] text-white" : " text-gray-800"
+                className={`flex items-center my-2 px-3 py-1 rounded-md cursor-pointer " ${
+                  activeTab === i ? "bg-gray-700" : " "
                 }`}
                 onClick={() => setActiveTab(i)}
               >
@@ -198,7 +212,7 @@ export default function Employee() {
         </div>
 
         {/* Content Area */}
-        <div className="relative overflow-y-scroll w-[calc(100%-190px)] h-[calc(100vh-70px)] ml-3 border-gray-300">
+        <div className="relative overflow-y-scroll w-full h-[calc(100vh-70px)] ml-3 border-gray-300">
           {activeTab === 0 && (
             <div className="absolute w-full h-full px-2">
               <Client
