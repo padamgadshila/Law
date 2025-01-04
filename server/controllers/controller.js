@@ -10,8 +10,12 @@ import Files from "../model/files.js";
 import { fileURLToPath } from "url";
 import mongoose from "mongoose";
 import { getOtp } from "../helpers/otpGenerator.js";
+import { Mail } from "./mailing.system.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+//otp Storage
+const otpStore = new Map();
 
 // authenticate user
 export let authorize = (roles = []) => {
@@ -171,10 +175,9 @@ export let addEmployee = async (req, res) => {
       mail: {
         username: username,
         userEmail: email,
-        text: `Dear ${fname} ${lname}, <br> Below is your login information <br>username = <b>${username}</b> <br>
-        password = <b>${password}</b> <br> use it for logging in into your employee dashboard.
-        `,
+        text: { password: password },
         subject: "Registered Successfully..!",
+        type: "registration",
       },
     });
   } catch (error) {
@@ -288,21 +291,52 @@ export let sendOtp = async (req, res, next) => {
     const { email } = req.body;
     const code = getOtp();
 
-    const check = await User.findOne({ email: email });
+    console.log(email, code);
+
+    const check = await User.findOne({ email: email }).select("-profilePic");
+
     if (!check) {
       return res.status(404).json({ error: "Email not found..!" });
     }
-    req.otp = {
-      email: email,
-      otp: code,
+    // TODO: otp
+    req.body = {
+      userEmail: email,
+      text: `Your One time password is ${code}`,
+      subject: "Password Recovery",
       valid: true,
     };
-    next();
-    return res.status(200).json({ message: "Otp sent..!" });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
 };
+
+export let verifyOtp = async (req, res) => {
+  try {
+    const { otp, email } = req.body;
+    const storedOtpData = otpStore.get(email);
+
+    if (!storedOtpData || !storedOtpData.valid) {
+      return res.status(400).json({ error: "Invalid or expired OTP." });
+    }
+
+    if (Date.now() > storedOtpData.expiresAt) {
+      otpStore.delete(email);
+      return res.status(400).json({ error: "OTP has expired." });
+    }
+
+    if (storedOtpData.otp !== otp) {
+      return res.status(400).json({ error: "Incorrect OTP." });
+    }
+    otpStore.delete(email);
+
+    return res.status(200).json({ message: "Okay" });
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({ error: "Server error.!" });
+  }
+};
+
 // GET ROUTES
 export let getClients = async (req, res) => {
   try {
@@ -408,6 +442,90 @@ export let employeeDataById = async (req, res) => {
     return res.status(500).json({ error: "Server Error" });
   }
 };
+export let verifyEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const check = await User.find({ email: email }).select(
+      "-password -profilePic"
+    );
+
+    if (!check) {
+      return res.status(404).json({ error: "Email not found..!" });
+    }
+
+    const otp = getOtp();
+    otpStore.set(email, {
+      otp,
+      valid: true,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    });
+    const emailData = {
+      username: check.username,
+      userEmail: email,
+      text: { otp: otp },
+      subject: "Account Recovery",
+      type: "forgotPassword",
+    };
+
+    return res
+      .status(200)
+      .json({ message: "Email sent successfully!", emailData });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error..!" });
+  }
+};
+
+export let resendOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+    otpStore.delete(email);
+    const otp = getOtp();
+    otpStore.set(email, {
+      otp,
+      valid: true,
+      expiresAt: Date.now() + 5 * 60 * 1000,
+    });
+    const emailData = {
+      userEmail: email,
+      text: { otp: otp },
+      subject: "Account Recovery",
+      type: "forgotPassword",
+    };
+
+    const mockRes = {
+      status: (code) => ({
+        json: (response) => {
+          console.log("Mock Mail Response:", code, response);
+          if (code === 200) {
+            return res.status(200).json({
+              message: "OTP sent..!",
+            });
+          } else {
+            return res.status(500).json({ error: "Failed to send otp." });
+          }
+        },
+      }),
+    };
+
+    await Mail({ body: emailData }, mockRes);
+  } catch (error) {
+    console.log(error);
+
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+export let getProfilePic = async (req, res) => {
+  try {
+    const { email } = req.query;
+    const profilePic = await User.findOne({ email: email }).select("-password");
+    if (!profilePic) {
+      return res.status(404).json({ error: "Not found..!" });
+    }
+    return res.status(200).json({ profilePic });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
 //  PUT ROUTES
 export let updateEmployee = async (req, res) => {
   try {
@@ -487,6 +605,20 @@ export let updateProfile = async (req, res) => {
     console.log(error);
 
     return res.status(500).json({ error: "Server Error..!" });
+  }
+};
+
+export let resetpass = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const hashPassword = await bcrypt.hash(password, 10);
+    const update = await User.findOneAndUpdate(
+      { email: email },
+      { password: hashPassword }
+    );
+    return res.status(200).json({ message: "Done" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
   }
 };
 // DELETE ROUTES

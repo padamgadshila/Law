@@ -27,3 +27,18 @@ export let emailValidation = (values) => {
 
   return errors;
 };
+
+export let passwordReset = (values) => {
+  const errors = {};
+  if (!values.password || !values.password === " ") {
+    errors.email = toast.error("Password cannot not be blank..!");
+  }
+  if (!values.cpassword || !values.cpassword === " ") {
+    errors.email = toast.error("Password cannot not be blank..!");
+  }
+  if (values.password !== values.cpassword) {
+    errors.email = toast.error("Password doesn't match..!");
+  }
+
+  return errors;
+};

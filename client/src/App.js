@@ -10,7 +10,7 @@ import AddEmployee from "./components/AddEmployee";
 import AddClient from "./components/AddClient";
 import AddClientDocuments from "./components/AddClientDocuments";
 import Admin from "./components/Admin";
-import { AuthorizeUser } from "./middllewares/auth";
+import { AuthorizeUser } from "./middlewares/auth";
 import Employee from "./components/Employee";
 import Session from "./components/Session";
 import EditClient from "./components/EditClient";

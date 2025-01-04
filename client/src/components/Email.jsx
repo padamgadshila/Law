@@ -1,13 +1,14 @@
 import React from "react";
 import styles from "../css/style.module.css";
-
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { emailValidation } from "./helpers/validation";
-import { Toaster } from "react-hot-toast";
+import { Toaster, toast } from "react-hot-toast";
+import { sendMail, verifyEmail } from "./helpers/helper";
 export default function Email() {
+  const navigate = useNavigate();
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -16,7 +17,24 @@ export default function Email() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      try {
+        const { data, status } = await verifyEmail(values);
+        if (status === 200) {
+          if (localStorage.getItem("email") === null) {
+            localStorage.setItem("email", values.email);
+          }
+          await toast.promise(sendMail(data.emailData), {
+            loading: "Sending otp...",
+            success: "OTP sent successfully!",
+            error: "Failed to send otp.",
+          });
+          navigate("/verify", { replace: true });
+        }
+      } catch (error) {
+        if (error.response) {
+          toast.error(error.response.data.error);
+        }
+      }
     },
   });
   return (

@@ -17,12 +17,17 @@ import {
   getClients,
   getEmployee,
   getProfile,
+  getProfilePic,
   login,
+  resendOtp,
+  resetpass,
   sendOtp,
   updateClient,
   updateEmployee,
   updateProfile,
   uploadFields,
+  verifyEmail,
+  verifyOtp,
 } from "../controllers/controller.js";
 import { Mail } from "../controllers/mailing.system.js";
 const router = Router();
@@ -59,5 +64,9 @@ router
 
 router.route("/sendMail").post(Mail);
 
-router.route("/sendOtp").post(sendOtp, Mail);
+router.route("/sendOtp").post(verifyEmail);
+router.route("/getProfilePic").get(getProfilePic);
+router.route("/verifyOtp").post(verifyOtp);
+router.route("/resendOtp").post(resendOtp);
+router.route("/resetpass").put(resetpass);
 export default router;

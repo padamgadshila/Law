@@ -241,9 +241,41 @@ export let sendMail = async (data) => {
   }
 };
 
-export let sendOtp = async (values) => {
+export let verifyEmail = async (values) => {
   try {
-    return await axios.post("/api/sendOtp", values.email);
+    return await axios.post("/api/sendOtp", values);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let getProfilePic = async (email) => {
+  try {
+    return await axios.get(`/api/getProfilePic?email=${email}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let resSendOtp = async (email) => {
+  try {
+    return await axios.post("/api/resendOtp", { email: email });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let verifyOtp = async (data) => {
+  try {
+    return await axios.post("/api/verifyOtp", data);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let resetPassword = async (data) => {
+  try {
+    return await axios.put("/api/resetpass", data);
   } catch (error) {
     throw error;
   }
