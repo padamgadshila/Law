@@ -8,6 +8,8 @@ import {
   faUser,
   faSyncAlt,
   faUserPlus,
+  faBars,
+  faClose,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
@@ -29,6 +31,8 @@ export default function Admin() {
 
   let [disableFilter, setDisableFilter] = useState(false);
   let [showProfile, setShowProfile] = useState(false);
+
+  let [showSidebar, setShowSidebar] = useState(false);
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -110,9 +114,9 @@ export default function Admin() {
 
   let Card = ({ title, count }) => {
     return (
-      <div className="border w-[250px] h-[110px] rounded-2xl flex flex-col items-center py-5 shadow-md">
-        <h1 className="font-bold text-4xl">{count || 0}</h1>
+      <div className="bg-gradient-to-r from-green-400 to-blue-500 text-white p-6 w-[250px] rounded-lg shadow-md text-center">
         <span className="text-2xl">{title}</span>
+        <h1 className="font-bold text-4xl">{count || 0}</h1>
       </div>
     );
   };
@@ -149,22 +153,25 @@ export default function Admin() {
         />
       </div>
 
-      <div className={styles.nav}>
-        <h1 className="ml-6 font-bold text-2xl text-black">
-          {profile.username || "Admin"}
-        </h1>
+      <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white shadow-lg flex items-center justify-between w-full mx-auto h-[70px]">
+        <div className="flex items-center">
+          <FontAwesomeIcon
+            icon={showSidebar ? faClose : faBars}
+            className="text-2xl ml-7 cursor-pointer"
+            onClick={() => {
+              showSidebar ? setShowSidebar(false) : setShowSidebar(true);
+            }}
+          />
+          <h1 className="ml-6 font-bold text-2xl">
+            {profile.username || "Admin"}
+          </h1>
+        </div>
         {activeTab === 1 && (
           <Link
             to={"/addEmployee"}
-            className={styles.button}
-            style={{
-              fontSize: "20px",
-              padding: "5px",
-              marginLeft: "5px",
-              width: "200px",
-            }}
+            className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-md px-5 py-2"
           >
-            Add Employee <FontAwesomeIcon icon={faUserPlus} />
+            Add Employee <FontAwesomeIcon icon={faUserPlus} className="ml-3" />
           </Link>
         )}
         {activeTab === 2 && (
@@ -175,14 +182,14 @@ export default function Admin() {
               value={query.search}
               onChange={handleOnChange}
               name="search"
-              className="bg-gray-100 w-[250px] h-[50px] rounded-l-xl outline-none pl-3 text-xl focus:border border-[#fd25d6]"
+              className="bg-white text-black w-[250px] h-[50px] rounded-l-xl outline-none pl-3 text-xl"
             />
             <select
               onClick={() => setDisableFilter(true)}
               value={query.filter}
               onChange={handleOnChange}
               name="filter"
-              className="bg-gray-100 cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px] focus:border border-[#fd25d6] rounded-r-xl"
+              className="bg-white text-black cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px]  rounded-r-xl"
             >
               <option disabled={disableFilter}>Filter</option>
               {filters.map((o, i) => (
@@ -200,8 +207,7 @@ export default function Admin() {
             />
             <Link
               to={"/addClient"}
-              className={styles.button}
-              style={{ fontSize: "20px", padding: "5px", marginLeft: "5px" }}
+              className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-md px-5 py-2"
             >
               Add Client <FontAwesomeIcon icon={faUserPlus} />
             </Link>
@@ -220,13 +226,17 @@ export default function Admin() {
       {/* Main Page */}
       <div className="flex">
         {/* Sidebar */}
-        <div className="w-[160px] h-[calc(100vh-70px)] ml-3  p-2">
-          <ul>
+        <div
+          className={`bg-[#2d3748] z-10 w-[170px] h-[calc(100vh-70px)] fixed p-2 transform transition-all duration-300 ease-in-out  ${
+            showSidebar ? " translate-x-0" : "translate-x-[-100%]"
+          }`}
+        >
+          <ul className="text-white">
             {tabs.map((tab, i) => (
               <li
                 key={i}
-                className={`flex items-center my-2 p-1 rounded-md cursor-pointer ${
-                  activeTab === i ? "bg-[#fd25d6] text-white" : " text-gray-800"
+                className={`flex items-center my-2 px-3 py-1 rounded-md cursor-pointer " ${
+                  activeTab === i ? "bg-gray-700" : " "
                 }`}
                 onClick={() => setActiveTab(i)}
               >
@@ -243,12 +253,15 @@ export default function Admin() {
         </div>
 
         {/* Content Area */}
-        <div className="relative overflow-y-scroll w-[calc(100%-190px)] h-[calc(100vh-70px)] ml-3 border-gray-300">
+        <div className="relative overflow-y-scroll w-full h-[calc(100vh-70px)] ml-3 border-gray-300">
           {activeTab === 0 && (
-            <div className="flex gap-3 mt-2">
-              {Totals.map((v, i) => (
-                <Card title={`Total ${v.name}`} key={i} count={v.total} />
-              ))}
+            <div>
+              <h1 className="font-bold text-2xl">Overview</h1>
+              <div className="flex gap-3 mt-2">
+                {Totals.map((v, i) => (
+                  <Card title={`Total ${v.name}`} key={i} count={v.total} />
+                ))}
+              </div>
             </div>
           )}
           {activeTab === 1 && (

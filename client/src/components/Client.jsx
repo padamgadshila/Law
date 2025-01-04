@@ -18,6 +18,57 @@ export default function AdminClient({
   toast,
   setOriginalClientData,
 }) {
+  const printDocument = (data) => {
+    const printableContent = `
+    <html>
+      <head>
+        <title>Print Document</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+          }
+          th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+          }
+          th {
+            background-color: #f4f4f4;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Client Details</h1>
+        <table>
+          <tr><th>Client Id</th><td>${data.cid || "-"}</td></tr>
+          <tr><th>First Name</th><td>${data.fname || "-"}</td></tr>
+          <tr><th>Middle Name</th><td>${data.mname || "-"}</td></tr>
+          <tr><th>Last Name</th><td>${data.lname || "-"}</td></tr>
+          <tr><th>Email</th><td>${data.email || "-"}</td></tr>
+          <tr><th>Mobile</th><td>${data.mobile || "-"}</td></tr>
+          <tr><th>Case Type</th><td>${data.caseType || "-"}</td></tr>
+          <tr><th>Date of Birth</th><td>${data.dob || "-"}</td></tr>
+          <tr><th>City</th><td>${data.address?.city || "-"}</td></tr>
+          <tr><th>Village</th><td>${data.address?.village || "-"}</td></tr>
+          <tr><th>Pincode</th><td>${data.address?.pincode || "-"}</td></tr>
+          <tr><th>Status</th><td>${data.status || "-"}</td></tr>
+        </table>
+      </body>
+    </html>
+  `;
+
+    const printWindow = window.open("", "_blank");
+    printWindow.document.open();
+    printWindow.document.write(printableContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
+
   const DocumentViewer = ({ isOpen, onClose, clientDocs }) => {
     if (!isOpen) return null;
 
@@ -91,10 +142,15 @@ export default function AdminClient({
         <td className="px-4 py-2 border">{data.status || "-"}</td>
         <td className="px-4 py-2 border text-center text-blue-500 cursor-pointer hover:underline">
           {data.fileUploaded === "Yes" ? (
-            <button onClick={() => getDocuments(data._id)}>View</button>
+            <button
+              className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700"
+              onClick={() => getDocuments(data._id)}
+            >
+              View
+            </button>
           ) : (
             <Link
-              className="text-green-500"
+              className="block px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-700"
               to={`/addClientDocuments?id=${data._id}`}
             >
               Add
@@ -103,11 +159,29 @@ export default function AdminClient({
         </td>
         {role === "admin" && (
           <>
-            <td className="px-4 py-2 border text-center text-green-500 cursor-pointer hover:underline">
-              <Link to={`/edit?id=${data._id}`}>Edit</Link>
+            <td className="px-4 py-2 border text-center cursor-pointer">
+              <Link
+                to={`/edit?id=${data._id}`}
+                className="block px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-700"
+              >
+                Edit
+              </Link>
             </td>
-            <td className="px-4 py-2 border text-center text-red-500 cursor-pointer hover:underline">
-              <button onClick={() => deleteClient(data._id)}>Delete</button>
+            <td className="px-4 py-2 border text-center cursor-pointer ">
+              <button
+                className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-700"
+                onClick={() => deleteClient(data._id)}
+              >
+                Delete
+              </button>
+            </td>
+            <td className="px-4 py-2 border text-center cursor-pointer ">
+              <button
+                onClick={() => printDocument(data)}
+                className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700"
+              >
+                Print
+              </button>
             </td>
           </>
         )}
@@ -117,7 +191,7 @@ export default function AdminClient({
 
   const TableHeader = ({ isAdmin }) => (
     <thead className="sticky top-0">
-      <tr className="text-white">
+      <tr className="text-black">
         {[
           "Client Id",
           "First Name",
@@ -135,7 +209,7 @@ export default function AdminClient({
         ].map((header, index) => (
           <th
             key={index}
-            className={`bg-[#fd25d6] px-4 py-2 ${
+            className={`bg-gray-300 px-4 py-2 ${
               index === 0 ? "rounded-tl-xl" : ""
             } ${index === 12 && !isAdmin ? "rounded-tr-xl" : ""}`}
           >
@@ -144,8 +218,8 @@ export default function AdminClient({
         ))}
         {isAdmin && (
           <th
-            colSpan={2}
-            className="bg-[#fd25d6] px-4 py-2 text-center rounded-tr-xl"
+            colSpan={3}
+            className="bg-gray-300 px-4 py-2 text-center rounded-tr-xl"
           >
             Action
           </th>

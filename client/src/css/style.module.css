@@ -25,10 +25,10 @@
 }
 
 .nav {
-  @apply flex items-center justify-between w-full mx-auto h-[70px] border
+  @apply flex items-center justify-between w-full mx-auto h-[70px] border;
 }
 
 .profile {
   background: linear-gradient(90deg, #fd25d6, #fc5543);
-  @apply w-full h-[150px] bg-pink-500 rounded-b-3xl relative
+  @apply w-full h-[150px] bg-pink-500 rounded-b-3xl relative;
 }

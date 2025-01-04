@@ -16,6 +16,7 @@ import Session from "./components/Session";
 import EditClient from "./components/EditClient";
 import EditEmployee from "./components/EditEmployee";
 import UpdateProfile from "./components/UpdateProfile";
+import Dashboard from "./components/Dashboard";
 
 const router = createBrowserRouter([
   {
@@ -98,6 +99,10 @@ const router = createBrowserRouter([
         <UpdateProfile />
       </AuthorizeUser>
     ),
+  },
+  {
+    path: "/d",
+    element: <Dashboard />,
   },
 ]);
 

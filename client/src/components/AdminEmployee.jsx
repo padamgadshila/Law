@@ -44,7 +44,7 @@ export default function AdminEmployee({
   };
   const TableHeader = ({ isAdmin }) => (
     <thead className="sticky top-0">
-      <tr className="text-white">
+      <tr className="text-black">
         {[
           "Employee Id",
           "First Name",
@@ -55,7 +55,7 @@ export default function AdminEmployee({
         ].map((header, index) => (
           <th
             key={index}
-            className={`bg-[#fd25d6] px-4 py-2 ${
+            className={`bg-gray-300 px-4 py-2 ${
               index === 0 ? "rounded-tl-xl" : ""
             } ${index === 6 && !isAdmin ? "rounded-tr-xl" : ""}`}
           >
@@ -65,7 +65,7 @@ export default function AdminEmployee({
         {isAdmin && (
           <th
             colSpan={2}
-            className="bg-[#fd25d6] px-4 py-2 text-center rounded-tr-xl"
+            className="bg-gray-300 px-4 py-2 text-center rounded-tr-xl"
           >
             Action
           </th>
@@ -77,17 +77,28 @@ export default function AdminEmployee({
   let TableRows = ({ e, i }) => {
     return (
       <tr className="hover:bg-gray-100" key={i}>
+        <td className="px-4 py-2 border">{e._id || "-"}</td>
         <td className="px-4 py-2 border">{e.fname || "-"}</td>
         <td className="px-4 py-2 border">{e.lname || "-"}</td>
         <td className="px-4 py-2 border">{e.username || "-"}</td>
         <td className="px-4 py-2 border">{e.email || "-"}</td>
         <td className="px-4 py-2 border">{e.mobile || "-"}</td>
 
-        <td className="px-4 py-2 border text-green-500 cursor-pointer hover:underline">
-          <Link to={`/editEmployee?id=${e._id}`}>Edit</Link>
+        <td className="px-4 py-2 border cursor-pointer">
+          <Link
+            to={`/editEmployee?id=${e._id}`}
+            className="block px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-700"
+          >
+            Edit
+          </Link>
         </td>
-        <td className="px-4 py-2 border text-red-500 cursor-pointer hover:underline">
-          <button onClick={() => deleteEmployee(e._id)}>Delete</button>
+        <td className="px-4 py-2 border cursor-pointer hover:underline">
+          <button
+            onClick={() => deleteEmployee(e._id)}
+            className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-700"
+          >
+            Delete
+          </button>
         </td>
       </tr>
     );
