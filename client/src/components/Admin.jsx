@@ -24,9 +24,9 @@ export default function Admin() {
     return parseInt(localStorage.getItem("activeTab")) || 0;
   });
   let tabs = [
-    { name: "Dashboard", icon: faTachometerAlt },
-    { name: "Employee", icon: faUserTie },
-    { name: "Client", icon: faUser },
+    { name: "Dashboard", icon: faTachometerAlt, option: "" },
+    { name: "Employee", icon: faUserTie, option: "Add employee" },
+    { name: "Client", icon: faUser, option: "Add client" },
   ];
 
   let [disableFilter, setDisableFilter] = useState(false);
@@ -253,7 +253,11 @@ export default function Admin() {
         </div>
 
         {/* Content Area */}
-        <div className="relative overflow-y-scroll w-full h-[calc(100vh-70px)] ml-3 border-gray-300">
+        <div
+          className={`relative overflow-y-scroll  h-[calc(100vh-70px)] ml-3 border-gray-300 transition-all duration-300 ease-in-out transform ${
+            showSidebar ? "w-[calc(100%-190px)] translate-x-[170px]" : "w-full"
+          }`}
+        >
           {activeTab === 0 && (
             <div>
               <h1 className="font-bold text-2xl">Overview</h1>

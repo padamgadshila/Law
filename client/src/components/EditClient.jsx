@@ -8,7 +8,7 @@ export default function EditClient() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const cid = location.search.split("=")[1];
+  const _id = location.search.split("=")[1];
   const formik = useFormik({
     initialValues: {
       _id: "",
@@ -17,7 +17,7 @@ export default function EditClient() {
       lname: "",
       email: "",
       mobile: "",
-      cid: "",
+      docNo: "",
       caseType: "",
       dob: "",
       city: "",
@@ -58,7 +58,7 @@ export default function EditClient() {
           lname: clientData.lname || "",
           email: clientData.email || "",
           mobile: clientData.mobile || "",
-          cid: clientData.cid || "",
+          docNo: clientData.docNo || "",
           caseType: clientData.caseType || "",
           dob: clientData.dob || "",
           city: clientData.address?.city || "",
@@ -75,7 +75,7 @@ export default function EditClient() {
   };
 
   useEffect(() => {
-    getClient(cid);
+    getClient(_id);
   }, []);
   return (
     <div className="w-full h-full flex justify-center">
@@ -136,12 +136,12 @@ export default function EditClient() {
         </div>
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
-            <label className="text-xl ml-1">Client Id</label>
+            <label className="text-xl ml-1">Document No</label>
             <input
               type="text"
               className={styles.input}
-              placeholder="Client Id"
-              {...formik.getFieldProps("cid")}
+              placeholder="Document No"
+              {...formik.getFieldProps("docNo")}
             />
           </div>
           <div className="w-full flex flex-col my-2">

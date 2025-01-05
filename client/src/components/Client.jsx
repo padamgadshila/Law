@@ -20,14 +20,36 @@ export default function AdminClient({
 }) {
   const clientDocs = useClientDocumentsStore((state) => state.clientDocs);
   const setClientDocs = useClientDocumentsStore((state) => state.setClientDocs);
+
+  const getDocuments = async (_id) => {
+    try {
+      const { data, status } = await getClientDocuments(_id);
+      if (status === 201) {
+        setClientDocs({
+          userId: data.docs[0]?.userId || null,
+          document: data.docs[0]?.document || [],
+          info: data.docs[0]?.info || [],
+        });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Error fetching documents.");
+    }
+  };
+  const isImage = (filename) => {
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
+    const ext = filename.split(".").pop().toLowerCase();
+    return imageExtensions.includes(ext);
+  };
+
   const printDocument = async (e) => {
+    await getDocuments(e._id);
     const printableContent = `
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Client Information</title>
+  <title>${e._id}</title>
   <style>
     /* General Styles */
     body {
@@ -42,6 +64,7 @@ export default function AdminClient({
       padding: 20px;
       border: 1px solid #ccc;
       background-color: #fff;
+      position:relative;
     }
     .heading {
       margin-top: 20px;
@@ -74,16 +97,27 @@ export default function AdminClient({
       display: block;
       margin-bottom: 5px;
     }
+      .doc{
+      display:block;
+      position:absolute;
+      top:10px;
+      right:10px;
+      }
+      .di{
+      width:100%;
+      margin-bottom:10px;
+      }
   </style>
 </head>
 <body>
   <div class="container">
+  <span class="doc"><b>Document no:</b>${e.docNo}</span>
     <h1 class="heading">Client Information</h1>
     <br />
     <h2 class="subheading">Personal Information</h2>
     <div class="info-row">
       <span class="info-item">
-        <b>Client Id: </b> ${e.cid}
+        <b>Client Id: </b> ${e._id}
       </span>
       <span class="info-item">
         <b>Full name: </b> ${e.fname} ${e.mname} ${e.lname}
@@ -102,7 +136,9 @@ export default function AdminClient({
         <b>Dob: </b> ${e.dob}
       </span>
       <span class="info-item">
-        <b>Address: </b> ${e.address?.city}, ${e.address?.village}, ${e.address?.pincode}
+        <b>Address: </b> ${e.address?.city}, ${e.address?.village}, ${
+      e.address?.pincode
+    }
       </span>
     </div>
     <div class="info-row">
@@ -116,7 +152,26 @@ export default function AdminClient({
 
     <h2 class="subheading">Documents Attached</h2>
     <div class="documents-section">
-      
+     <ul>
+          ${clientDocs.document
+            .map(
+              (doc, i) => `
+            <li class="di" key="${i}">
+              <h3>${doc.documentType}</h3>
+              ${
+                isImage(doc.filename)
+                  ? `
+                <img src="http://localhost:3500/${doc.filename}" style="width:50%" alt="${doc.documentType}" />
+              `
+                  : `
+                <iframe src="http://localhost:3500/${doc.filename}" frameBorder="0" width="100%" height="1000px" title="${doc.documentType}"></iframe>
+              `
+              }
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
     </div>
   </div>
 </body>
@@ -125,10 +180,19 @@ export default function AdminClient({
   `;
 
     const printWindow = window.open("", "_blank");
-    printWindow.document.open();
-    printWindow.document.write(printableContent);
-    printWindow.document.close();
-    printWindow.print();
+    const print = localStorage.getItem("print");
+    if (print === "print") {
+      localStorage.removeItem("print");
+      printWindow.document.open();
+      printWindow.document.write(printableContent);
+      printWindow.document.close();
+      printWindow.print();
+    } else if (print === "view") {
+      localStorage.removeItem("print");
+      printWindow.document.open();
+      printWindow.document.write(printableContent);
+      printWindow.document.close();
+    }
   };
 
   const DocumentViewer = ({ isOpen, onClose, clientDocs }) => {
@@ -190,7 +254,8 @@ export default function AdminClient({
 
     return (
       <tr className="hover:bg-gray-100" key={i}>
-        <td className="px-4 py-2 border">{data.cid || "-"}</td>
+        <td className="px-4 py-2 border">{data._id || "-"}</td>
+        <td className="px-4 py-2 border">{data.docNo || "-"}</td>
         <td className="px-4 py-2 border">{data.fname || "-"}</td>
         <td className="px-4 py-2 border">{data.mname || "-"}</td>
         <td className="px-4 py-2 border">{data.lname || "-"}</td>
@@ -206,7 +271,10 @@ export default function AdminClient({
           {data.fileUploaded === "Yes" ? (
             <button
               className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700"
-              onClick={() => getDocuments(data._id)}
+              onClick={() => {
+                getDocuments(data._id);
+                showTable(true);
+              }}
             >
               View
             </button>
@@ -219,16 +287,16 @@ export default function AdminClient({
             </Link>
           )}
         </td>
+        <td className="px-4 py-2 border text-center cursor-pointer">
+          <Link
+            to={`/edit?id=${data._id}`}
+            className="block px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-700"
+          >
+            Edit
+          </Link>
+        </td>
         {role === "admin" && (
           <>
-            <td className="px-4 py-2 border text-center cursor-pointer">
-              <Link
-                to={`/edit?id=${data._id}`}
-                className="block px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-700"
-              >
-                Edit
-              </Link>
-            </td>
             <td className="px-4 py-2 border text-center cursor-pointer ">
               <button
                 className="px-4 py-2 rounded-md bg-red-500 text-white hover:bg-red-700"
@@ -237,16 +305,30 @@ export default function AdminClient({
                 Delete
               </button>
             </td>
-            <td className="px-4 py-2 border text-center cursor-pointer ">
-              <button
-                onClick={() => printDocument(data)}
-                className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700"
-              >
-                Print
-              </button>
-            </td>
           </>
         )}
+        <td className="px-4 py-2 border text-center cursor-pointer ">
+          <button
+            onClick={() => {
+              localStorage.setItem("print", "print");
+              printDocument(data);
+            }}
+            className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700"
+          >
+            Print
+          </button>
+        </td>
+        <td className="px-4 py-2 border text-center cursor-pointer ">
+          <button
+            onClick={() => {
+              localStorage.setItem("print", "view");
+              printDocument(data);
+            }}
+            className="px-4 py-2 rounded-md bg-green-500 text-white hover:bg-green-700"
+          >
+            Preview
+          </button>
+        </td>
       </tr>
     );
   };
@@ -256,6 +338,7 @@ export default function AdminClient({
       <tr className="text-black">
         {[
           "Client Id",
+          "Document No",
           "First Name",
           "Middle Name",
           "Last Name",
@@ -273,12 +356,20 @@ export default function AdminClient({
             key={index}
             className={`bg-gray-300 px-4 py-2 ${
               index === 0 ? "rounded-tl-xl" : ""
-            } ${index === 12 && !isAdmin ? "rounded-tr-xl" : ""}`}
+            } ${index === 14 && !isAdmin ? "rounded-tr-xl" : ""}`}
           >
             {header}
           </th>
         ))}
         {isAdmin && (
+          <th
+            colSpan={4}
+            className="bg-gray-300 px-4 py-2 text-center rounded-tr-xl"
+          >
+            Action
+          </th>
+        )}
+        {!isAdmin && (
           <th
             colSpan={3}
             className="bg-gray-300 px-4 py-2 text-center rounded-tr-xl"
@@ -290,18 +381,10 @@ export default function AdminClient({
     </thead>
   );
   const TableBody = ({ clientData }) => {
-    const role = localStorage.getItem("role");
-
-    // Filter data for employees
-    const filteredData =
-      role === "employee"
-        ? clientData.filter((data) => data.fileUploaded === "No")
-        : clientData;
-
     return (
       <tbody>
-        {filteredData.length !== 0 ? (
-          filteredData.map((data, i) => <TableRows data={data} key={i} />)
+        {clientData.length !== 0 ? (
+          clientData.map((data, i) => <TableRows data={data} key={i} />)
         ) : (
           <tr>
             <td className="px-4 py-2 border text-center" colSpan="100%">
@@ -331,40 +414,19 @@ export default function AdminClient({
     getClientData();
   }, []);
 
-  const deleteClient = async (cid) => {
+  const deleteClient = async (_id) => {
     try {
-      const { data, status } = await deleteClientData(cid);
+      const { data, status } = await deleteClientData(_id);
       if (status === 201) {
         toast.success(data.message);
-        removeClient(cid);
+        removeClient(_id);
       }
     } catch (error) {
       toast.error(error.response?.data?.error || "Error deleting client.");
     }
   };
 
-  const getDocuments = async (cid) => {
-    try {
-      const { data, status } = await getClientDocuments(cid);
-      if (status === 201) {
-        setClientDocs({
-          userId: data.docs[0]?.userId || null,
-          document: data.docs[0]?.document || [],
-          info: data.docs[0]?.info || [],
-        });
-        showTable(true);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Error fetching documents.");
-    }
-  };
-
   const role = localStorage.getItem("role");
-  const filteredData =
-    role === "employee"
-      ? clientData.filter((data) => data.fileUploaded === "No")
-      : clientData;
-
   return (
     <div>
       <DocumentViewer
@@ -375,7 +437,7 @@ export default function AdminClient({
       <table className="border-collapse w-full text-left table-auto">
         <TableHeader isAdmin={role === "admin"} />
         <TableBody
-          clientData={filteredData}
+          clientData={clientData}
           isAdmin={role === "admin"}
           deleteClient={deleteClient}
           getDocuments={getDocuments}

@@ -47,8 +47,12 @@ router
   .route("/deleteClient")
   .delete(authorize(["admin", "employee"]), deleteClient);
 router.route("/download/:filename").get(downloadFile);
-router.route("/clientData").get(authorize("admin"), clientDataById);
-router.route("/updateClient").put(authorize("admin"), updateClient);
+router
+  .route("/clientData")
+  .get(authorize(["admin", "employee"]), clientDataById);
+router
+  .route("/updateClient")
+  .put(authorize(["admin", "employee"]), updateClient);
 
 router.route("/getEmployee").get(authorize("admin"), getEmployee);
 

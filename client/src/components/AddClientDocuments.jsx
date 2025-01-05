@@ -24,7 +24,7 @@ export default function AddClientDocuments() {
   const formik = useFormik({
     initialValues: {
       info: "",
-      cid: id,
+      _id: id,
     },
     validateOnBlur: false,
     validateOnChange: false,

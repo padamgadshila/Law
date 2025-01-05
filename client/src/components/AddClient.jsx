@@ -13,7 +13,7 @@ export default function AddClient() {
       lname: "",
       email: "",
       mobile: "",
-      cid: "",
+      docNo: "",
       caseType: "",
       dob: "",
       city: "",
@@ -27,7 +27,7 @@ export default function AddClient() {
         let { data, status } = await addClientInfo(values);
         if (status === 201) {
           toast.success("Client Info saved..!");
-          navigate(`/addClientDocuments?id=${data.cid}`);
+          navigate(`/addClientDocuments?id=${data._id}`);
         }
       } catch (error) {
         toast.error("Something went wrong");
@@ -94,12 +94,12 @@ export default function AddClient() {
         </div>
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
-            <label className="text-xl ml-1">Client Id</label>
+            <label className="text-xl ml-1">Document No</label>
             <input
               type="text"
               className={styles.input}
-              placeholder="Client Id"
-              {...formik.getFieldProps("cid")}
+              placeholder="Document No"
+              {...formik.getFieldProps("docNo")}
             />
           </div>
           <div className="w-full flex flex-col my-2">

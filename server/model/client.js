@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const clientSchema = new mongoose.Schema({
-  cid: { type: String },
+  docNo: { type: String },
   fname: { type: String },
   mname: { type: String },
   lname: { type: String },

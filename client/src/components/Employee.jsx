@@ -212,7 +212,11 @@ export default function Employee() {
         </div>
 
         {/* Content Area */}
-        <div className="relative overflow-y-scroll w-full h-[calc(100vh-70px)] ml-3 border-gray-300">
+        <div
+          className={`relative overflow-y-scroll  h-[calc(100vh-70px)] ml-3 border-gray-300 transition-all duration-300 ease-in-out transform ${
+            showSidebar ? "w-[calc(100%-190px)] translate-x-[170px]" : "w-full"
+          }`}
+        >
           {activeTab === 0 && (
             <div className="absolute w-full h-full px-2">
               <Client

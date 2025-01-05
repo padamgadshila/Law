@@ -50,7 +50,7 @@ export let addClientDocuments = async ({ documents, values }) => {
     });
 
     formData.append("info", JSON.stringify(values.info));
-    formData.append("cid", JSON.stringify(values.cid));
+    formData.append("_id", JSON.stringify(values._id));
 
     return await axios.post("/api/addClientDocument", formData, {
       headers: {
@@ -74,9 +74,9 @@ export let getClients = async () => {
   }
 };
 
-export let deleteClientData = async (cid) => {
+export let deleteClientData = async (_id) => {
   try {
-    return await axios.delete(`/api/deleteClient?id=${cid}`, {
+    return await axios.delete(`/api/deleteClient?id=${_id}`, {
       headers: {
         Authorization: `Bearer ${getCookie()}`,
       },
@@ -86,9 +86,9 @@ export let deleteClientData = async (cid) => {
   }
 };
 
-export let getClientDocuments = async (cid) => {
+export let getClientDocuments = async (_id) => {
   try {
-    return await axios.get(`/api/clientDoc?id=${cid}`, {
+    return await axios.get(`/api/clientDoc?id=${_id}`, {
       headers: {
         Authorization: `Bearer ${getCookie()}`,
       },

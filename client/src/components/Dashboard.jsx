@@ -1,59 +1,66 @@
-import { faBars } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { getClientDocuments } from "./helpers/helper";
 
 export default function Dashboard() {
-  return (
-    <div className="w-[8in] mx-auto p-5 border mt-5">
-      <h1 className="mt-5 font-bold text-3xl text-black text-center">
-        Client Information
-      </h1>
-      <br />
-      <h1>Personal Information</h1>
-      <div className="flex items-center">
-        <span className="border px-3 py-2 w-full block">
-          <b>Client Id: </b> 12345t622323
-        </span>
-        <span className="border px-3 py-2 w-full block">
-          <b>Full name: </b> Harry James Potter
-        </span>
-      </div>
-      <div className="flex items-center">
-        <span className="border px-3 py-2 w-full block">
-          <b>Mobile no: </b> Harry James Potter
-        </span>
-        <span className="border px-3 py-2 w-full block">
-          <b>Email: </b> harry@gmail.com
-        </span>
-      </div>
-      <div className="flex items-center">
-        <span className="border px-3 py-2 w-full block">
-          <b>Dob: </b> 14/4/2003
-        </span>
-        <span className="border px-3 py-2 w-full block">
-          <b>Address: </b>Pune, Khadki, 411003
-        </span>
-      </div>
-      <div className="flex items-center">
-        <span className="border px-3 py-2 w-full block">
-          <b>Case Type: </b> Criminal
-        </span>
-        <span className="border px-3 py-2 w-full block">
-          <b>Documents Attached: </b> Yes
-        </span>
-      </div>
+  let [files, setFiles] = useState({
+    userId: "",
+    documents: [],
+    info: "",
+  });
 
-      <h1>Documents Attached</h1>
-      <div className="w-full flex flex-col">
-        <span>Aadhar card</span>
-        <span>Aadhar card</span>
-        <span>Aadhar card</span>
-        <span>Aadhar card</span>
-        <span>Aadhar card</span>
-        <span>Aadhar card</span>
-        <span>Aadhar card</span>
-        <br />
+  let getItems = async () => {
+    let cid = "677a134eba9871491eb0f411";
+    const { data, status } = await getClientDocuments(cid);
+    if (status === 201) {
+      setFiles({
+        userId: data.docs[0]?.userId || null,
+        documents: data.docs[0]?.document || [],
+        info: data.docs[0]?.info || [],
+      });
+    }
+  };
+
+  useEffect(() => {
+    getItems();
+  }, []);
+  const handlePrint = () => {
+    console.log("Print button clicked");
+    window.print();
+  };
+
+  const isImage = (filename) => {
+    const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
+    const ext = filename.split(".").pop().toLowerCase();
+    return imageExtensions.includes(ext);
+  };
+
+  return (
+    <div>
+      <div className="w-[8in] mx-auto p-5 border mt-5">
+        <ul>
+          {files.documents.map((doc, i) => (
+            <li className="w-full mb-4" key={i}>
+              <h3>{doc.documentType}</h3>
+              {isImage(doc.filename) ? (
+                <img
+                  src={`http://localhost:3500/${doc.filename}`}
+                  className="w-full"
+                  alt={doc.documentType}
+                />
+              ) : (
+                <iframe
+                  src={`http://localhost:3500/${doc.filename}`}
+                  frameBorder="0"
+                  width="100%"
+                  height="1000px"
+                  title={doc.documentType}
+                ></iframe>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
+      <button onClick={handlePrint}>Print</button>
     </div>
   );
 }

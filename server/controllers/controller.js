@@ -187,7 +187,7 @@ export let addEmployee = async (req, res) => {
 export let addClient = async (req, res) => {
   try {
     const {
-      cid,
+      docNo,
       fname,
       mname,
       lname,
@@ -201,7 +201,7 @@ export let addClient = async (req, res) => {
     } = req.body;
 
     const client = new Client({
-      cid,
+      docNo,
       fname,
       mname,
       lname,
@@ -214,7 +214,7 @@ export let addClient = async (req, res) => {
     });
 
     const savedClient = await client.save();
-    return res.status(201).json({ cid: savedClient._id });
+    return res.status(201).json({ _id: savedClient._id });
   } catch (error) {
     return res.status(500).json({ error: "server error" });
   }
@@ -246,8 +246,8 @@ export let add = async (req, res) => {
 };
 export let addClientDocument = async (req, res) => {
   try {
-    const { cid, info } = req.body;
-    const id = getId(cid);
+    const { _id, info } = req.body;
+    const id = getId(_id);
 
     const update = await Client.findOneAndUpdate(
       { _id: id },
@@ -283,6 +283,8 @@ export let addClientDocument = async (req, res) => {
       .status(201)
       .json({ message: "Documents uploaded..!", user: savedData });
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({ error: "Server Error" });
   }
 };
@@ -545,7 +547,7 @@ export let updateClient = async (req, res) => {
   try {
     const {
       _id,
-      cid,
+      docNo,
       fname,
       mname,
       lname,
@@ -559,7 +561,7 @@ export let updateClient = async (req, res) => {
     } = req.body;
     const id = getId(_id);
     const UpdateClient = await Client.findByIdAndUpdate(id, {
-      cid,
+      docNo,
       fname,
       mname,
       lname,

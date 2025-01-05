@@ -17,6 +17,7 @@
     "react-pdf": "^9.2.1",
     "react-router-dom": "^7.1.1",
     "react-scripts": "^5.0.1",
+    "react-to-print": "^3.0.4",
     "zustand": "^5.0.2"
   },
   "scripts": {
