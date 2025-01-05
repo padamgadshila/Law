@@ -186,7 +186,9 @@ export default function AdminClient({
       printWindow.document.open();
       printWindow.document.write(printableContent);
       printWindow.document.close();
-      printWindow.print();
+      setInterval(() => {
+        printWindow.print();
+      }, 1000);
     } else if (print === "view") {
       localStorage.removeItem("print");
       printWindow.document.open();

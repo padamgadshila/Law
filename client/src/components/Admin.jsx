@@ -24,9 +24,17 @@ export default function Admin() {
     return parseInt(localStorage.getItem("activeTab")) || 0;
   });
   let tabs = [
-    { name: "Dashboard", icon: faTachometerAlt, option: "" },
-    { name: "Employee", icon: faUserTie, option: "Add employee" },
-    { name: "Client", icon: faUser, option: "Add client" },
+    { name: "Dashboard", icon: faTachometerAlt, option: [] },
+    {
+      name: "Employee",
+      icon: faUserTie,
+      option: [{ name: "Add employee", link: "/addEmployee" }],
+    },
+    {
+      name: "Client",
+      icon: faUser,
+      option: [{ name: "Add client", link: "/addClient" }],
+    },
   ];
 
   let [disableFilter, setDisableFilter] = useState(false);
@@ -166,14 +174,6 @@ export default function Admin() {
             {profile.username || "Admin"}
           </h1>
         </div>
-        {activeTab === 1 && (
-          <Link
-            to={"/addEmployee"}
-            className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-md px-5 py-2"
-          >
-            Add Employee <FontAwesomeIcon icon={faUserPlus} className="ml-3" />
-          </Link>
-        )}
         {activeTab === 2 && (
           <div className="flex items-center gap-1">
             <input
@@ -205,12 +205,6 @@ export default function Admin() {
               title="Refresh"
               onClick={Refresh}
             />
-            <Link
-              to={"/addClient"}
-              className="bg-gradient-to-r from-indigo-400 to-purple-500 rounded-md px-5 py-2"
-            >
-              Add Client <FontAwesomeIcon icon={faUserPlus} />
-            </Link>
           </div>
         )}
         <img
@@ -233,31 +227,38 @@ export default function Admin() {
         >
           <ul className="text-white">
             {tabs.map((tab, i) => (
-              <li
-                key={i}
-                className={`flex items-center my-2 px-3 py-1 rounded-md cursor-pointer " ${
-                  activeTab === i ? "bg-gray-700" : " "
-                }`}
-                onClick={() => setActiveTab(i)}
-              >
-                <FontAwesomeIcon
-                  icon={tab.icon}
-                  className="text-[22px] w-[20px] h-[20px]"
-                />
-                <span className="inline-block ml-2 text-[20px]">
-                  {tab.name}
-                </span>
-              </li>
+              <>
+                <li
+                  key={i}
+                  className={`flex items-center my-2 px-3 py-1 rounded-md cursor-pointer " ${
+                    activeTab === i ? "bg-gray-700" : " "
+                  }`}
+                  onClick={() => setActiveTab(i)}
+                >
+                  <FontAwesomeIcon
+                    icon={tab.icon}
+                    className="text-[22px] w-[20px] h-[20px]"
+                  />
+                  <span className="inline-block ml-2 text-[20px]">
+                    {tab.name}
+                  </span>
+                </li>
+                {activeTab === i && (
+                  <ul>
+                    {tab.option.map((subTab, i) => (
+                      <li className="ml-6 cursor-pointer" key={i}>
+                        <Link to={subTab.link}>{subTab.name}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </>
             ))}
           </ul>
         </div>
 
         {/* Content Area */}
-        <div
-          className={`relative overflow-y-scroll  h-[calc(100vh-70px)] ml-3 border-gray-300 transition-all duration-300 ease-in-out transform ${
-            showSidebar ? "w-[calc(100%-190px)] translate-x-[170px]" : "w-full"
-          }`}
-        >
+        <div className="relative overflow-y-scroll w-full h-[calc(100vh-70px)] ml-3 border-gray-300">
           {activeTab === 0 && (
             <div>
               <h1 className="font-bold text-2xl">Overview</h1>
