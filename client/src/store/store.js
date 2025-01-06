@@ -11,9 +11,9 @@ export const useClientStore = create((set) => ({
 
 export let useClientDocumentsStore = create((set) => ({
   clientDocs: {
-    userId: "",
+    userId: null,
     document: [],
-    info: "",
+    info: null,
   },
   setClientDocs: (data) => set({ clientDocs: data }),
 }));

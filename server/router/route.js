@@ -9,6 +9,7 @@ import {
   authorize,
   clientDataById,
   clientDoc,
+  dashboardData,
   deleteClient,
   deleteEmployee,
   downloadFile,
@@ -73,4 +74,6 @@ router.route("/getProfilePic").get(getProfilePic);
 router.route("/verifyOtp").post(verifyOtp);
 router.route("/resendOtp").post(resendOtp);
 router.route("/resetpass").put(resetpass);
+
+router.route("/dashboardData").get(dashboardData);
 export default router;

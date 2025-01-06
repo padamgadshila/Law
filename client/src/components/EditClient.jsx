@@ -3,7 +3,9 @@ import styles from "../css/style.module.css";
 import { useFormik } from "formik";
 import { getOneClientBYId, updateClient } from "./helpers/helper";
 import { Toaster, toast } from "react-hot-toast";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 export default function EditClient() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,6 +22,8 @@ export default function EditClient() {
       docNo: "",
       caseType: "",
       dob: "",
+      gender: "",
+      state: "",
       city: "",
       village: "",
       pincode: "",
@@ -61,6 +65,8 @@ export default function EditClient() {
           docNo: clientData.docNo || "",
           caseType: clientData.caseType || "",
           dob: clientData.dob || "",
+          gender: clientData.gender || "",
+          state: clientData.address?.state || "",
           city: clientData.address?.city || "",
           village: clientData.address?.village || "",
           pincode: clientData.address?.pincode || "",
@@ -125,12 +131,33 @@ export default function EditClient() {
             />
           </div>
           <div className="w-full flex flex-col my-2">
+            <label className="text-xl ml-1">Gender</label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Gender"
+              {...formik.getFieldProps("gender")}
+            />
+          </div>
+        </div>
+
+        <div className="w-full flex gap-2">
+          <div className="w-full flex flex-col my-2">
             <label className="text-xl ml-1">Mobile</label>
             <input
               type="text"
               className={styles.input}
               placeholder="Mobile No."
               {...formik.getFieldProps("mobile")}
+            />
+          </div>
+          <div className="w-full flex flex-col my-2">
+            <label className="text-xl ml-1">Dob</label>
+            <input
+              type="date"
+              className={styles.input}
+              placeholder="Dob"
+              {...formik.getFieldProps("dob")}
             />
           </div>
         </div>
@@ -150,7 +177,7 @@ export default function EditClient() {
               className={styles.input}
               {...formik.getFieldProps("caseType")}
             >
-              <option value=""></option>
+              <option>Select Case Type</option>
               <option value="Criminal">Criminal</option>
               <option value="Property">Property</option>
               <option value="Divorce">Divorce</option>
@@ -163,14 +190,15 @@ export default function EditClient() {
 
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
-            <label className="text-xl ml-1">Dob</label>
+            <label className="text-xl ml-1">State</label>
             <input
-              type="date"
+              type="text"
               className={styles.input}
-              placeholder="Dob"
-              {...formik.getFieldProps("dob")}
+              placeholder="State"
+              {...formik.getFieldProps("state")}
             />
           </div>
+
           <div className="w-full flex flex-col my-2">
             <label className="text-xl ml-1">City</label>
             <input
@@ -208,6 +236,13 @@ export default function EditClient() {
         <button className={styles.button} type="submit">
           Update
         </button>
+        <Link
+          to={localStorage.getItem("role") === "admin" ? "/admin" : "/employee"}
+          className="mt-4 text-[20px] font-bold text-blue-500 "
+        >
+          <FontAwesomeIcon icon={faArrowLeft} className="mr-3" />
+          Back to Home
+        </Link>
       </form>
     </div>
   );

@@ -5,6 +5,7 @@ const fileSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "client",
     required: true,
+    unique: true,
   },
   document: {},
   info: { type: String },

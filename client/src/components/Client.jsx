@@ -1,13 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClose, faUserPlus } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import {
-  deleteClientData,
-  FileDownload,
-  FileView,
-  getClientDocuments,
-} from "./helpers/helper";
+import { deleteClientData, getClientDocuments } from "./helpers/helper";
 import { useClientDocumentsStore } from "../store/store";
 import { getClients } from "./helpers/helper";
 
@@ -18,23 +11,24 @@ export default function AdminClient({
   toast,
   setOriginalClientData,
 }) {
-  const clientDocs = useClientDocumentsStore((state) => state.clientDocs);
-  const setClientDocs = useClientDocumentsStore((state) => state.setClientDocs);
+  // const clientDocs = useClientDocumentsStore((state) => state.clientDocs);
+  // const setClientDocs = useClientDocumentsStore((state) => state.setClientDocs);
 
-  const getDocuments = async (_id) => {
-    try {
-      const { data, status } = await getClientDocuments(_id);
-      if (status === 201) {
-        setClientDocs({
-          userId: data.docs[0]?.userId || null,
-          document: data.docs[0]?.document || [],
-          info: data.docs[0]?.info || [],
-        });
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.error || "Error fetching documents.");
-    }
-  };
+  // const getDocuments = async (_id) => {
+  //   try {
+  //     const { data, status } = await getClientDocuments(_id);
+  //     if (status === 201) {
+  //       setClientDocs({
+  //         userId: data.docs?.userId || null,
+  //         document: data.docs?.document || [],
+  //         info: data.docs?.info || null,
+  //       });
+  //     }
+  //   } catch (error) {
+  //     toast.error(error.response?.data?.error || "Error fetching documents.");
+  //   }
+  // };
+
   const isImage = (filename) => {
     const imageExtensions = ["jpg", "jpeg", "png", "gif", "bmp", "webp"];
     const ext = filename.split(".").pop().toLowerCase();
@@ -42,213 +36,126 @@ export default function AdminClient({
   };
 
   const printDocument = async (e) => {
-    await getDocuments(e._id);
-    const printableContent = `
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>${e._id}</title>
-  <style>
-    /* General Styles */
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9f9f9;
-    }
-    .container {
-      width: 8in;
-      margin: 20px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      background-color: #fff;
-      position:relative;
-    }
-    .heading {
-      margin-top: 20px;
-      font-weight: bold;
-      font-size: 24px;
-      text-align: center;
-      color: #000;
-    }
-    .subheading {
-      font-size: 18px;
-      font-weight: bold;
-      margin: 20px 0 10px;
-    }
-    .info-row {
-      display: flex;
-      align-items: center;
-      
-    }
-    .info-item {
-    display:block;
-      padding: 10px;
-      border: 1px solid #ccc;
-      width:100%;
-    }
+    try {
+      const { data, status } = await getClientDocuments(e._id);
 
-    .documents-section {
-      margin-top: 20px;
-    }
-    .document-item {
-      display: block;
-      margin-bottom: 5px;
-    }
-      .doc{
-      display:block;
-      position:absolute;
-      top:10px;
-      right:10px;
-      }
-      .di{
-      width:100%;
-      margin-bottom:10px;
-      }
-  </style>
-</head>
-<body>
-  <div class="container">
-  <span class="doc"><b>Document no:</b>${e.docNo}</span>
-    <h1 class="heading">Client Information</h1>
-    <br />
-    <h2 class="subheading">Personal Information</h2>
-    <div class="info-row">
-      <span class="info-item">
-        <b>Client Id: </b> ${e._id}
-      </span>
-      <span class="info-item">
-        <b>Full name: </b> ${e.fname} ${e.mname} ${e.lname}
-      </span>
-    </div>
-    <div class="info-row">
-      <span class="info-item">
-        <b>Mobile no: </b> ${e.mobile}
-      </span>
-      <span class="info-item">
-        <b>Email: </b> ${e.email}
-      </span>
-    </div>
-    <div class="info-row">
-      <span class="info-item">
-        <b>Dob: </b> ${e.dob}
-      </span>
-      <span class="info-item">
-        <b>Address: </b> ${e.address?.city}, ${e.address?.village}, ${
-      e.address?.pincode
-    }
-      </span>
-    </div>
-    <div class="info-row">
-      <span class="info-item">
-        <b>Case Type: </b> ${e.caseType}
-      </span>
-      <span class="info-item">
-        <b>Documents Attached: </b> ${e.fileUploaded}
-      </span>
-    </div>
+      const printableContent = `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${e.fname} ${e.mname} ${e.lname}</title>
+    <style>
+      body {font-family: Arial, sans-serif;margin: 0;padding: 0;background-color: #f9f9f9;}.container {
+        width: 8in;margin: 20px auto;padding: 20px;border: 1px solid #ccc;background-color: #fff;position:relative;}
+        .heading{margin-top: 20px;font-weight: bold;font-size:24px;text-align:center;color: #000;}
+        .subheading {font-size: 18px;font-weight: bold;margin: 20px 0 10px;}.info-row {display: 
+        flex;align-items: center;}.info-item {display:block;padding: 10px;      
+        border: 1px solid #ccc;width:100%;}.documents-section {margin-top: 20px;}
+        .document-item {display: block;margin-bottom: 5px;}.doc1{display:block;position:absolute;
+        top:10px;left:10px;} ul{list-style:none;}    
+    </style>
+  </head>
+  <body>
+    <div class="container">
+    <span class="doc1"><b>Document no:</b>${e.docNo}</span>
+      <h1 class="heading">Client Information</h1>
+      <br />
+      <h2 class="subheading">Personal Information</h2>
+      <div class="info-row">
+        <span class="info-item">
+          <b>Client ID: </b> ${e._id}
+        </span>    
+        <span class="info-item">
+          <b>Full name: </b> ${e.fname} ${e.mname} ${e.lname}
+        </span>
+      </div>
+      <div class="info-row">
+          <span class="info-item">
+          <b>Mobile no: </b> ${e.mobile}
+        </span>
+        <span class="info-item">
+          <b>Email: </b> ${e.email}
+        </span>
+      </div>
+      <div class="info-row">
+             <span class="info-item">
+          <b>Dob: </b> ${e.dob}
+        </span>
+        <span class="info-item">
+          <b>Gender: </b>${e.gender}
+        </span>      
 
-    <h2 class="subheading">Documents Attached</h2>
-    <div class="documents-section">
-     <ul>
-          ${clientDocs.document
+      </div>
+      <div class="info-row">
+        <span class="info-item">
+          <b>Case Type: </b> ${e.caseType}
+        </span>
+        <span class="info-item">
+          <b>Documents Attached: </b> ${e.fileUploaded}
+        </span>
+
+                
+      </div> 
+      <div class="info-row">
+      <span class="info-item">
+          <b>Address: </b>${e.address?.state}, ${e.address?.city}, ${
+        e.address?.village
+      }, ${e.address?.pincode}
+        </span>
+      </div>
+      <h2 class="subheading">Documents Information</h2>
+      <div class="documents-section">
+  <ul>
+    ${
+      data.docs?.document.length > 0
+        ? data.docs?.document
             .map(
               (doc, i) => `
             <li class="di" key="${i}">
+            ${
+              isImage(doc.filename)
+                ? `
               <h3>${doc.documentType}</h3>
-              ${
-                isImage(doc.filename)
-                  ? `
                 <img src="http://localhost:3500/${doc.filename}" style="width:50%" alt="${doc.documentType}" />
               `
-                  : `
-                <iframe src="http://localhost:3500/${doc.filename}" frameBorder="0" width="100%" height="1000px" title="${doc.documentType}"></iframe>
-              `
-              }
+                : ""
+            }
             </li>
           `
             )
-            .join("")}
-        </ul>
-    </div>
-  </div>
-</body>
-</html>
-
-  `;
-
-    const printWindow = window.open("", "_blank");
-    const print = localStorage.getItem("print");
-    if (print === "print") {
-      localStorage.removeItem("print");
-      printWindow.document.open();
-      printWindow.document.write(printableContent);
-      printWindow.document.close();
-      setInterval(() => {
-        printWindow.print();
-      }, 1000);
-    } else if (print === "view") {
-      localStorage.removeItem("print");
-      printWindow.document.open();
-      printWindow.document.write(printableContent);
-      printWindow.document.close();
+            .join("")
+        : `<li>No files available</li>`
     }
-  };
-
-  const DocumentViewer = ({ isOpen, onClose, clientDocs }) => {
-    if (!isOpen) return null;
-
-    return (
-      <div className="z-10 fixed left-0 flex justify-center bg-[rgba(0,0,0,.3)] backdrop-blur-md h-screen w-full">
-        <FontAwesomeIcon
-          icon={faClose}
-          className="absolute top-3 text-3xl px-[10px] py-[6px] rounded-full cursor-pointer right-3 text-white bg-[#fd25d6]"
-          onClick={onClose}
-        />
-        <div className="w-[450px] h-[450px] overflow-y-scroll mt-10 rounded-lg p-[20px] bg-white">
-          <span>
-            <b>Client Id:</b>
-            {clientDocs.userId || "-"}
-          </span>
-          <table className="border-collapse w-full text-left table-fixed">
-            <thead>
-              <tr className="text-white">
-                <th className="bg-[#fd25d6] w-[200px] px-4 py-2 rounded-tl-xl">
-                  Document Type
-                </th>
-                <th
-                  className="bg-[#fd25d6] px-4 py-2 text-center rounded-tr-xl"
-                  colSpan={2}
-                >
-                  Action
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {clientDocs?.document?.map((d, i) => (
-                <tr key={i}>
-                  <td className="px-4 py-[5px] border bg-white">
-                    {d.documentType}
-                  </td>
-                  <td className="px-4 py-[5px] border bg-white">
-                    <FileView filename={d.filename} />
-                  </td>
-                  <td className="px-4 py-[5px] border w-[180px] bg-white">
-                    <FileDownload filename={d.filename} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <h5 className="font-bold">Extra Info</h5>
-          <span className="w-full inline-block text-wrap h-auto border rounded-md bg-white">
-            {clientDocs.info || ""}
-          </span>
-        </div>
+  </ul>
+  
       </div>
-    );
+    </div>
+  </body>
+  </html>
+  
+    `;
+
+      const printWindow = window.open("", "_blank");
+      const print = localStorage.getItem("print");
+      if (print === "print") {
+        localStorage.removeItem("print");
+        printWindow.document.open();
+        printWindow.document.write(printableContent);
+        printWindow.document.close();
+        setTimeout(() => {
+          printWindow.print();
+        }, 1000);
+      } else if (print === "view") {
+        localStorage.removeItem("print");
+        printWindow.document.open();
+        printWindow.document.write(printableContent);
+        printWindow.document.close();
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const TableRows = ({ data, i }) => {
@@ -269,7 +176,7 @@ export default function AdminClient({
         <td className="px-4 py-2 border">{data.address?.village || "-"}</td>
         <td className="px-4 py-2 border">{data.address?.pincode || "-"}</td>
         <td className="px-4 py-2 border">{data.status || "-"}</td>
-        <td className="px-4 py-2 border text-center text-blue-500 cursor-pointer hover:underline">
+        {/* <td className="px-4 py-2 border text-center text-blue-500 cursor-pointer hover:underline">
           {data.fileUploaded === "Yes" ? (
             <button
               className="px-4 py-2 rounded-md bg-blue-500 text-white hover:bg-blue-700"
@@ -288,7 +195,7 @@ export default function AdminClient({
               Add
             </Link>
           )}
-        </td>
+        </td> */}
         <td className="px-4 py-2 border text-center cursor-pointer">
           <Link
             to={`/edit?id=${data._id}`}
@@ -352,7 +259,7 @@ export default function AdminClient({
           "Village",
           "Pincode",
           "Status",
-          "Documents",
+          // "Documents",
         ].map((header, index) => (
           <th
             key={index}
@@ -398,7 +305,7 @@ export default function AdminClient({
     );
   };
 
-  const [table, showTable] = useState(false);
+  // const [table, showTable] = useState(false);
 
   const getClientData = async () => {
     try {
@@ -431,18 +338,17 @@ export default function AdminClient({
   const role = localStorage.getItem("role");
   return (
     <div>
-      <DocumentViewer
+      {/* <DocumentViewer
         isOpen={table}
         onClose={() => showTable(false)}
         clientDocs={clientDocs}
-      />
+      /> */}
       <table className="border-collapse w-full text-left table-auto">
         <TableHeader isAdmin={role === "admin"} />
         <TableBody
           clientData={clientData}
           isAdmin={role === "admin"}
           deleteClient={deleteClient}
-          getDocuments={getDocuments}
         />
       </table>
     </div>

@@ -13,9 +13,11 @@ export default function AddClient() {
       lname: "",
       email: "",
       mobile: "",
+      gender: "",
       docNo: "",
       caseType: "",
       dob: "",
+      state: "",
       city: "",
       village: "",
       pincode: "",
@@ -82,6 +84,19 @@ export default function AddClient() {
               {...formik.getFieldProps("email")}
             />
           </div>
+
+          <div className="w-full flex flex-col my-2">
+            <label className="text-xl ml-1">Gender</label>
+            <input
+              type="text"
+              className={styles.input}
+              placeholder="Gender"
+              {...formik.getFieldProps("gender")}
+            />
+          </div>
+        </div>
+
+        <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
             <label className="text-xl ml-1">Mobile</label>
             <input
@@ -89,6 +104,15 @@ export default function AddClient() {
               className={styles.input}
               placeholder="Mobile No."
               {...formik.getFieldProps("mobile")}
+            />
+          </div>
+          <div className="w-full flex flex-col my-2">
+            <label className="text-xl ml-1">Dob</label>
+            <input
+              type="date"
+              className={styles.input}
+              placeholder="Dob"
+              {...formik.getFieldProps("dob")}
             />
           </div>
         </div>
@@ -108,7 +132,7 @@ export default function AddClient() {
               className={styles.input}
               {...formik.getFieldProps("caseType")}
             >
-              <option value=""></option>
+              <option>Select Case Type</option>
               <option value="Criminal">Criminal</option>
               <option value="Property">Property</option>
               <option value="Divorce">Divorce</option>
@@ -121,14 +145,15 @@ export default function AddClient() {
 
         <div className="w-full flex gap-2">
           <div className="w-full flex flex-col my-2">
-            <label className="text-xl ml-1">Dob</label>
+            <label className="text-xl ml-1">State</label>
             <input
-              type="date"
+              type="text"
               className={styles.input}
-              placeholder="Dob"
-              {...formik.getFieldProps("dob")}
+              placeholder="State"
+              {...formik.getFieldProps("state")}
             />
           </div>
+
           <div className="w-full flex flex-col my-2">
             <label className="text-xl ml-1">City</label>
             <input

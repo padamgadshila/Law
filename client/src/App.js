@@ -17,6 +17,7 @@ import EditClient from "./components/EditClient";
 import EditEmployee from "./components/EditEmployee";
 import UpdateProfile from "./components/UpdateProfile";
 import Dashboard from "./components/Dashboard";
+import ViewDocuments from "./components/ViewDocuments";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,14 @@ const router = createBrowserRouter([
     element: (
       <AuthorizeUser>
         <AddClientDocuments />
+      </AuthorizeUser>
+    ),
+  },
+  {
+    path: "/viewDocuments",
+    element: (
+      <AuthorizeUser>
+        <ViewDocuments />
       </AuthorizeUser>
     ),
   },

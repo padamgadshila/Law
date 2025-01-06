@@ -9,7 +9,9 @@ const clientSchema = new mongoose.Schema({
   mobile: { type: String },
   caseType: { type: String },
   dob: { type: String },
+  gender: { type: String },
   address: {
+    state: { type: String },
     city: { type: String },
     village: { type: String },
     pincode: { type: String },

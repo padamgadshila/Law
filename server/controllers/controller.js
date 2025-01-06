@@ -195,6 +195,8 @@ export let addClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      gender,
+      state,
       city,
       village,
       pincode,
@@ -209,7 +211,8 @@ export let addClient = async (req, res) => {
       mobile,
       caseType,
       dob,
-      address: { city, village, pincode },
+      gender,
+      address: { state, city, village, pincode },
       fileUploaded: "No",
     });
 
@@ -253,7 +256,10 @@ export let addClientDocument = async (req, res) => {
       { _id: id },
       { fileUploaded: "Yes" }
     );
-
+    const check = Files.findOne({ userId: id });
+    if (check) {
+      return res.status(409).json({ error: "Documents already uploaded..!" });
+    }
     const docs = [];
     for (let i = 0; i <= 8; i++) {
       const documentTypeKey = `documentType-${i}`;
@@ -357,11 +363,8 @@ export let clientDoc = async (req, res) => {
     const cid = req.query.id;
     const id = getId(cid);
 
-    const docs = await Files.find({ userId: id });
+    const docs = await Files.findOne({ userId: id });
 
-    if (docs.length === 0) {
-      return res.status(404).json({ error: "Document not found" });
-    }
     return res.status(201).json({ docs });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
@@ -476,7 +479,31 @@ export let verifyEmail = async (req, res) => {
     return res.status(500).json({ error: "Server Error..!" });
   }
 };
+export let dashboardData = async (req, res) => {
+  try {
+    const Employee = await User.find({ role: "employee" });
+    const Clients = await Client.find();
 
+    let totalEmployee = Employee.length;
+    let TotalClients = Clients.length;
+    let totalMaleClients = Clients.filter(
+      (data) => data.gender === "Male"
+    ).length;
+    let totalFemaleClients = Clients.filter(
+      (data) => data.gender === "Female"
+    ).length;
+
+    return res.status(200).set("Cache-Control", "no-store").json({
+      totalEmployee,
+      TotalClients,
+      totalMaleClients,
+      totalFemaleClients,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
 export let resendOtp = async (req, res) => {
   try {
     const { email } = req.body;
@@ -555,6 +582,8 @@ export let updateClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      gender,
+      state,
       city,
       village,
       pincode,
@@ -569,7 +598,9 @@ export let updateClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      gender,
       address: {
+        state,
         city,
         village,
         pincode,

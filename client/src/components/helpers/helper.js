@@ -280,3 +280,15 @@ export let resetPassword = async (data) => {
     throw error;
   }
 };
+
+export let dashboardData = async () => {
+  try {
+    return await axios.get("/api/dashboardData", {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
