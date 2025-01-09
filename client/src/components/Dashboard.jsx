@@ -24,7 +24,6 @@ export default function Dashboard() {
     getItems();
   }, []);
   const handlePrint = () => {
-    console.log("Print button clicked");
     window.print();
   };
 

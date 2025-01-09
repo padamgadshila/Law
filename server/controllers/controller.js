@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../model/user.js";
 import Client from "../model/client.js";
+import Event from "../model/event.js";
 import generate from "../helpers/username.password.generator.js";
 import fs from "fs";
 import path from "path";
@@ -256,7 +257,7 @@ export let addClientDocument = async (req, res) => {
       { _id: id },
       { fileUploaded: "Yes" }
     );
-    const check = Files.findOne({ userId: id });
+    const check = await Files.findOne({ userId: id });
     if (check) {
       return res.status(409).json({ error: "Documents already uploaded..!" });
     }
@@ -289,7 +290,6 @@ export let addClientDocument = async (req, res) => {
       .status(201)
       .json({ message: "Documents uploaded..!", user: savedData });
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ error: "Server Error" });
   }
@@ -298,8 +298,6 @@ export let sendOtp = async (req, res, next) => {
   try {
     const { email } = req.body;
     const code = getOtp();
-
-    console.log(email, code);
 
     const check = await User.findOne({ email: email }).select("-profilePic");
 
@@ -339,12 +337,27 @@ export let verifyOtp = async (req, res) => {
 
     return res.status(200).json({ message: "Okay" });
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ error: "Server error.!" });
   }
 };
 
+export let addEvent = async (req, res) => {
+  try {
+    const { title, date, time, adminId } = req.body;
+    const event = new Event({
+      title,
+      date,
+      time,
+      adminId,
+    });
+
+    const savedEvent = await event.save();
+    return res.status(200).json({ message: "Event added..!" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
 // GET ROUTES
 export let getClients = async (req, res) => {
   try {
@@ -442,7 +455,6 @@ export let employeeDataById = async (req, res) => {
     }
     return res.status(200).json({ message: "Employee Found..!", employeeData });
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ error: "Server Error" });
   }
@@ -481,9 +493,12 @@ export let verifyEmail = async (req, res) => {
 };
 export let dashboardData = async (req, res) => {
   try {
+    const { id } = req.query;
+
+    const _id = getId(id);
     const Employee = await User.find({ role: "employee" });
     const Clients = await Client.find();
-
+    const events = await Event.find({ adminId: _id });
     let totalEmployee = Employee.length;
     let TotalClients = Clients.length;
     let totalMaleClients = Clients.filter(
@@ -498,9 +513,10 @@ export let dashboardData = async (req, res) => {
       TotalClients,
       totalMaleClients,
       totalFemaleClients,
+      events,
     });
   } catch (error) {
-    console.log(error);
+
     return res.status(500).json({ error: "Server Error" });
   }
 };
@@ -524,7 +540,6 @@ export let resendOtp = async (req, res) => {
     const mockRes = {
       status: (code) => ({
         json: (response) => {
-          console.log("Mock Mail Response:", code, response);
           if (code === 200) {
             return res.status(200).json({
               message: "OTP sent..!",
@@ -538,7 +553,6 @@ export let resendOtp = async (req, res) => {
 
     await Mail({ body: emailData }, mockRes);
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ error: "Server Error" });
   }
@@ -553,6 +567,18 @@ export let getProfilePic = async (req, res) => {
     return res.status(200).json({ profilePic });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export let getEvents = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const _id = getId(id);
+    const events = await Event.find({ adminId: _id });
+
+    return res.status(200).json({ events });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error..!" });
   }
 };
 //  PUT ROUTES
@@ -631,11 +657,9 @@ export let updateProfile = async (req, res) => {
       }
     );
 
-    console.log(updateInfo);
 
     return res.status(200).json({ message: "Profile updated..!" });
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ error: "Server Error..!" });
   }
@@ -694,8 +718,19 @@ export let deleteEmployee = async (req, res) => {
     }
     return res.status(200).json({ message: "Deleted..!" });
   } catch (error) {
-    console.log(error);
 
     return res.status(500).json({ error: "Server Error..!" });
+  }
+};
+
+export let deleteEvent = async (req, res) => {
+  try {
+    const { id } = req.query;
+    const _id = getId(id);
+    const delEvent = await Event.deleteOne({ _id: _id });
+
+    return res.status(200).json({ message: "Task deleted..!" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
   }
 };

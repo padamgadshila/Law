@@ -28,3 +28,10 @@ export let useEmployeeStore = create((set) => ({
       ),
     })),
 }));
+
+export let useEvent = create((set) => ({
+  events: [],
+  setEvents: (data) => set({ events: data }),
+  removeEvents: (id) =>
+    set((state) => ({ events: state.events.filter((t) => t._id !== id) })),
+}));

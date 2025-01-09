@@ -35,7 +35,6 @@ export default function Verify() {
         let email = localStorage.getItem("email");
         const { data, status } = await getProfilePic(email);
         if (status === 200) {
-          console.log(data);
           setImage(data.profilePic.profilePic);
         }
       } catch (error) {

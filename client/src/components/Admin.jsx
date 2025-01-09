@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import styles from "../css/style.module.css";
 import avatar from "./images/profile.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -7,21 +6,23 @@ import {
   faUserTie,
   faUser,
   faSyncAlt,
-  faUserPlus,
   faBars,
   faClose,
-  faFile,
   faCalendarDays,
+  faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link, useNavigate } from "react-router-dom";
 import { Toaster, toast } from "react-hot-toast";
 import Client from "./Client";
-import { dashboardData, getClients } from "./helpers/helper";
-import { useClientStore, useEmployeeStore } from "../store/store";
+import { dashboardData, deleteEvent, getClients } from "./helpers/helper";
+import { useClientStore, useEmployeeStore, useEvent } from "../store/store";
 import AdminEmployee from "./AdminEmployee";
 import { Profile } from "./Profile";
+import AddEvent from "./AddEvent";
+import Footer from "./Footer";
 export default function Admin() {
   const navigate = useNavigate();
+  const id = localStorage.getItem("id");
   let [activeTab, setActiveTab] = useState(() => {
     return parseInt(localStorage.getItem("activeTab")) || 0;
   });
@@ -137,18 +138,32 @@ export default function Admin() {
   let [totalMaleCli, setTotalMaleCli] = useState(0);
   let [totalFemaleCli, setTotalFemaleCli] = useState(0);
 
+  let events = useEvent((state) => state.events);
+  let setEvents = useEvent((state) => state.setEvents);
+  let removeEvents = useEvent((state) => state.removeEvents);
+
   useEffect(() => {
     let getDashboardData = async () => {
-      const { data, status } = await dashboardData();
+      const { data, status } = await dashboardData(id);
       if (status === 200) {
         setTotalEmp(data.totalEmployee);
         setTotalCli(data.TotalClients);
         setTotalMaleCli(data.totalMaleClients);
         setTotalFemaleCli(data.totalFemaleClients);
+        setEvents(data.events);
       }
     };
     getDashboardData();
   }, []);
+
+  useEffect(() => {
+    const sortedEvents = events.sort((a, b) => {
+      const dateTimeA = new Date(`${a.date}T${a.time}`);
+      const dateTimeB = new Date(`${b.date}T${b.time}`);
+      return dateTimeA - dateTimeB;
+    });
+    setEvents(sortedEvents);
+  }, [events]);
 
   useEffect(() => {
     setTotals([
@@ -196,6 +211,20 @@ export default function Admin() {
       );
     });
     setFilteredClients(filtered);
+  };
+
+  let delEvents = async (id) => {
+    try {
+      const { data, status } = await deleteEvent(id);
+      if (status === 200) {
+        toast.success(data.message);
+        removeEvents(id);
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
   };
   return (
     <div className="w-full h-screen relative">
@@ -328,18 +357,47 @@ export default function Admin() {
 
         {/* Content Area */}
         <div
-          className={`relative overflow-y-scroll  h-[calc(100vh-70px)] ml-3 border-gray-300 transition-all duration-300 ease-in-out transform ${
-            showSidebar ? "w-[calc(100%-290px)] translate-x-[270px]" : "w-full"
+          className={`relative overflow-y-scroll  h-[calc(100vh-70px)]  border-gray-300 transition-all duration-300 ease-in-out transform ${
+            showSidebar ? "w-[calc(100%-270px)] translate-x-[270px]" : "w-full"
           }`}
         >
           {activeTab === 0 && (
-            <div>
-              <h1 className="font-bold text-2xl">Overview</h1>
+            <div className="px-7 py-5">
+              <h1 className="font-bold text-2xl text-gray-700 ml-3">
+                Overview
+              </h1>
               <div className="flex gap-3 mt-2">
                 {Totals.map((v, i) => (
                   <Card title={`Total ${v.name}`} key={i} count={v.total} />
                 ))}
               </div>
+
+              <section className="section-container p-6 rounded-lg shadow-md w-[500px] mt-5 bg-white border">
+                <h2 className="text-xl font-bold mb-4 text-gray-700">
+                  Upcoming Events
+                </h2>
+                <div className="scrolling-list group relative w-full h-[150px] overflow-hidden">
+                  <ul className="animate-scroll-vertical absolute w-full group-hover:animation-paused">
+                    {events.map((data, i) => (
+                      <li key={i}>
+                        <div className="border relative rounded-md my-4 p-4 ">
+                          <h3 className="text-2xl w-full font-semibold">
+                            {data.title}
+                          </h3>
+                          <p className="text-gray-600 text-xl">
+                            {data.date} at {data.time}
+                          </p>
+                          <FontAwesomeIcon
+                            icon={faTrash}
+                            onClick={() => delEvents(data._id)}
+                            className="cursor-pointer absolute top-1/2 right-3 -translate-y-1/2 text-2xl text-red-500 hover:text-red-700"
+                          />
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </section>
             </div>
           )}
           {activeTab === 1 && (
@@ -362,6 +420,10 @@ export default function Admin() {
                 setOriginalClientData={setOriginalClientData}
               />
             </div>
+          )}
+          {/* Add Event */}
+          {activeTab === 3 && (
+            <AddEvent toast={toast} events={events} setEvents={setEvents} />
           )}
         </div>
       </div>

@@ -281,9 +281,45 @@ export let resetPassword = async (data) => {
   }
 };
 
-export let dashboardData = async () => {
+export let dashboardData = async (id) => {
   try {
-    return await axios.get("/api/dashboardData", {
+    return await axios.get(`/api/dashboardData?id=${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let addEvent = async (values) => {
+  try {
+    return await axios.post("/api/addEvent", values, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let deleteEvent = async (id) => {
+  try {
+    return await axios.delete(`/api/delEvent?id=${id}`, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let getEvents = async (id) => {
+  try {
+    return await axios.get(`/api/getEvents?id=${id}`, {
       headers: {
         Authorization: `Bearer ${getCookie()}`,
       },

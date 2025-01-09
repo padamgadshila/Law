@@ -5,6 +5,7 @@ import {
   addClient,
   addClientDocument,
   addEmployee,
+  addEvent,
   auth,
   authorize,
   clientDataById,
@@ -12,17 +13,18 @@ import {
   dashboardData,
   deleteClient,
   deleteEmployee,
+  deleteEvent,
   downloadFile,
   employeeDataById,
   fileView,
   getClients,
   getEmployee,
+  getEvents,
   getProfile,
   getProfilePic,
   login,
   resendOtp,
   resetpass,
-  sendOtp,
   updateClient,
   updateEmployee,
   updateProfile,
@@ -76,4 +78,8 @@ router.route("/resendOtp").post(resendOtp);
 router.route("/resetpass").put(resetpass);
 
 router.route("/dashboardData").get(dashboardData);
+
+router.route("/addEvent").post(authorize("admin"), addEvent);
+router.route("/delEvent").delete(authorize("admin"), deleteEvent);
+router.route("/getEvents").get(authorize("admin"), getEvents);
 export default router;
