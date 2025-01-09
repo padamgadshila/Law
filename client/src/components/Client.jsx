@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { deleteClientData, getClientDocuments } from "./helpers/helper";
-import { useClientDocumentsStore } from "../store/store";
+import { useClientDocumentsStore, useClientStore } from "../store/store";
 import { getClients } from "./helpers/helper";
 
-export default function AdminClient({
-  clientData,
-  setClientData,
-  removeClient,
-  toast,
-  setOriginalClientData,
-}) {
+export default function AdminClient({ toast, query, clientData }) {
+  let [originalClientData, setOriginalClientData] = useState([]);
+
+  const setClientData = useClientStore((state) => state.setClientData);
+
+  const removeClient = useClientStore((state) => state.removeClient);
+  useEffect(() => {
+    if (query.filter && query.search) {
+      const filtered = originalClientData.filter((item) =>
+        item[query.filter]?.toLowerCase().includes(query.search.toLowerCase())
+      );
+      setClientData(filtered);
+    } else {
+      setClientData(originalClientData);
+    }
+  }, [query]);
+
   // const clientDocs = useClientDocumentsStore((state) => state.clientDocs);
   // const setClientDocs = useClientDocumentsStore((state) => state.setClientDocs);
 
@@ -305,8 +315,6 @@ export default function AdminClient({
     );
   };
 
-  // const [table, showTable] = useState(false);
-
   const getClientData = async () => {
     try {
       const { data, status } = await getClients();
@@ -337,7 +345,7 @@ export default function AdminClient({
 
   const role = localStorage.getItem("role");
   return (
-    <div>
+    <div className="absolute w-full h-full px-2">
       {/* <DocumentViewer
         isOpen={table}
         onClose={() => showTable(false)}

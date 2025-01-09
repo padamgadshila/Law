@@ -1,13 +1,12 @@
 import React, { useEffect } from "react";
 import { deleteEmployeeData, getEmployee } from "./helpers/helper";
 import { Link } from "react-router-dom";
+import { useEmployeeStore } from "../store/store";
 
-export default function AdminEmployee({
-  employeeData,
-  setEmployeeData,
-  removeEmployee,
-  toast,
-}) {
+export default function AdminEmployee({ toast }) {
+  const employeeData = useEmployeeStore((state) => state.employeeData);
+  const setEmployeeData = useEmployeeStore((state) => state.setEmployeeData);
+  const removeEmployee = useEmployeeStore((state) => state.removeEmployee);
   const getEmployeeData = async () => {
     try {
       const { data, status } = await getEmployee();
@@ -105,13 +104,15 @@ export default function AdminEmployee({
   };
 
   return (
-    <table className="border-collapse w-full text-left table-auto">
-      <TableHeader isAdmin={"admin"} />
-      <tbody>
-        {employeeData.map((e, i) => (
-          <TableRows e={e} key={i} />
-        ))}
-      </tbody>
-    </table>
+    <div className="absolute w-full h-full p-2">
+      <table className="border-collapse w-full text-left table-auto">
+        <TableHeader isAdmin={"admin"} />
+        <tbody>
+          {employeeData.map((e, i) => (
+            <TableRows e={e} key={i} />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
