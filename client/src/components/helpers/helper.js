@@ -328,3 +328,59 @@ export let getEvents = async (id) => {
     throw error;
   }
 };
+
+export let expiredEvents = async () => {
+  try {
+    return await axios.delete("/api/expiredEvents", {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let bulkDelete = async (ids) => {
+  try {
+    return await axios.post(
+      "/api/bulkDelete",
+      { ids: ids },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie()}`,
+        },
+      }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let bulkHide = async (ids) => {
+  try {
+    return await axios.post(
+      "/api/bulkHide",
+      { ids: ids },
+      {
+        headers: {
+          Authorization: `Bearer ${getCookie()}`,
+        },
+      }
+    );
+  } catch (error) {
+    throw error;
+  }
+};
+
+export let bulkEdit = async (values) => {
+  try {
+    return await axios.post("/api/bulkEdit", values, {
+      headers: {
+        Authorization: `Bearer ${getCookie()}`,
+      },
+    });
+  } catch (error) {
+    throw error;
+  }
+};

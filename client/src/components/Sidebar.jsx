@@ -49,7 +49,7 @@ let Sidebar = ({
     >
       <ul className="text-white">
         {tabs.map((tab, i) => (
-          <>
+          <React.Fragment key={i}>
             <li
               key={i}
               className={`flex items-center my-2 px-3 py-1 rounded-md cursor-pointer hover:bg-gray-700" ${
@@ -83,7 +83,7 @@ let Sidebar = ({
                 ))}
               </ul>
             )}
-          </>
+          </React.Fragment>
         ))}
       </ul>
     </div>

@@ -35,3 +35,12 @@ export let useEvent = create((set) => ({
   removeEvents: (id) =>
     set((state) => ({ events: state.events.filter((t) => t._id !== id) })),
 }));
+
+export let useSelectRecords = create((set) => ({
+  selectedRecords: [],
+  setSelectedRecords: (data) => set({ selectedRecords: data }),
+  removeSelectedRecords: (id) =>
+    set((state) => ({
+      selectedRecords: state.selectedRecords.filter((t) => t !== id),
+    })),
+}));

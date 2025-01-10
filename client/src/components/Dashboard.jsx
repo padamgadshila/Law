@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEvent } from "../store/store";
-import { dashboardData, deleteEvent } from "./helpers/helper";
+import { dashboardData, deleteEvent, expiredEvents } from "./helpers/helper";
 let Dashboard = ({ toast, setEvents, events }) => {
   const id = localStorage.getItem("id");
   let [Totals, setTotals] = useState([{}]);
@@ -35,6 +35,7 @@ let Dashboard = ({ toast, setEvents, events }) => {
       return dateTimeA - dateTimeB;
     });
     setEvents(sortedEvents);
+    console.log(events);
   }, [events]);
 
   useEffect(() => {
@@ -67,6 +68,21 @@ let Dashboard = ({ toast, setEvents, events }) => {
       }
     }
   };
+
+  useEffect(() => {
+    let deleteExpiredEvents = async () => {
+      try {
+        const { data, status } = await expiredEvents();
+        if (status === 200) {
+          toast.success(data.message);
+        }
+      } catch (error) {
+        toast.error(error.response.data.error);
+      }
+    };
+    deleteExpiredEvents();
+  }, []);
+
   return (
     <div className="px-7 py-5">
       <h1 className="font-bold text-2xl text-gray-700 ml-3">Overview</h1>

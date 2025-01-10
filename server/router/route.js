@@ -8,12 +8,16 @@ import {
   addEvent,
   auth,
   authorize,
+  bulkDelete,
+  bulkEdit,
+  bulkHide,
   clientDataById,
   clientDoc,
   dashboardData,
   deleteClient,
   deleteEmployee,
   deleteEvent,
+  deleteExpiredEvents,
   downloadFile,
   employeeDataById,
   fileView,
@@ -24,6 +28,7 @@ import {
   getProfilePic,
   login,
   resendOtp,
+  resetDocNoCounter,
   resetpass,
   updateClient,
   updateEmployee,
@@ -82,4 +87,9 @@ router.route("/dashboardData").get(dashboardData);
 router.route("/addEvent").post(authorize("admin"), addEvent);
 router.route("/delEvent").delete(authorize("admin"), deleteEvent);
 router.route("/getEvents").get(authorize("admin"), getEvents);
+router.route("/expiredEvents").delete(authorize("admin"), deleteExpiredEvents);
+router.route("/bulkDelete").post(authorize("admin"), bulkDelete);
+router.route("/bulkHide").post(authorize("admin"), bulkHide);
+router.route("/resetCounter").put(resetDocNoCounter);
+router.route("/bulkEdit").post(authorize("admin"), bulkEdit);
 export default router;

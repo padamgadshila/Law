@@ -2,7 +2,7 @@ import multer from "multer";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import User from "../model/user.js";
-import Client from "../model/client.js";
+import Client, { DocNoCounter } from "../model/client.js";
 import Event from "../model/event.js";
 import generate from "../helpers/username.password.generator.js";
 import fs from "fs";
@@ -188,7 +188,6 @@ export let addEmployee = async (req, res) => {
 export let addClient = async (req, res) => {
   try {
     const {
-      docNo,
       fname,
       mname,
       lname,
@@ -196,6 +195,7 @@ export let addClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      docType,
       gender,
       state,
       city,
@@ -204,7 +204,6 @@ export let addClient = async (req, res) => {
     } = req.body;
 
     const client = new Client({
-      docNo,
       fname,
       mname,
       lname,
@@ -212,9 +211,11 @@ export let addClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      docType,
       gender,
       address: { state, city, village, pincode },
       fileUploaded: "No",
+      hide: false,
     });
 
     const savedClient = await client.save();
@@ -290,7 +291,6 @@ export let addClientDocument = async (req, res) => {
       .status(201)
       .json({ message: "Documents uploaded..!", user: savedData });
   } catch (error) {
-
     return res.status(500).json({ error: "Server Error" });
   }
 };
@@ -304,7 +304,6 @@ export let sendOtp = async (req, res, next) => {
     if (!check) {
       return res.status(404).json({ error: "Email not found..!" });
     }
-    // TODO: otp
     req.body = {
       userEmail: email,
       text: `Your One time password is ${code}`,
@@ -337,7 +336,6 @@ export let verifyOtp = async (req, res) => {
 
     return res.status(200).json({ message: "Okay" });
   } catch (error) {
-
     return res.status(500).json({ error: "Server error.!" });
   }
 };
@@ -354,6 +352,47 @@ export let addEvent = async (req, res) => {
 
     const savedEvent = await event.save();
     return res.status(200).json({ message: "Event added..!" });
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export let bulkHide = async (req, res) => {
+  try {
+    const { ids } = req.body;
+
+    const result = await Client.updateMany(
+      { _id: { $in: ids } },
+      { $set: { hide: true } }
+    );
+    if (result.modifiedCount > 0) {
+      return res.status(200).json({ message: "Records hidden..!" });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export let bulkEdit = async (req, res) => {
+  try {
+    const { id, caseType, docType, status } = req.body;
+    const updateFields = {};
+    if (caseType) updateFields.caseType = caseType;
+    if (docType) updateFields.docType = docType;
+    if (status) updateFields.status = status;
+
+    if (Object.keys(updateFields).length === 0) {
+      return res.status(400).json({ error: "No valid fields to update." });
+    }
+    const result = await Client.updateMany(
+      { _id: { $in: id } },
+      {
+        $set: updateFields,
+      }
+    );
+    if (result.modifiedCount > 0) {
+      return res.status(200).json({ message: "Records updated..!" });
+    }
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
   }
@@ -455,7 +494,6 @@ export let employeeDataById = async (req, res) => {
     }
     return res.status(200).json({ message: "Employee Found..!", employeeData });
   } catch (error) {
-
     return res.status(500).json({ error: "Server Error" });
   }
 };
@@ -516,7 +554,6 @@ export let dashboardData = async (req, res) => {
       events,
     });
   } catch (error) {
-
     return res.status(500).json({ error: "Server Error" });
   }
 };
@@ -553,7 +590,6 @@ export let resendOtp = async (req, res) => {
 
     await Mail({ body: emailData }, mockRes);
   } catch (error) {
-
     return res.status(500).json({ error: "Server Error" });
   }
 };
@@ -600,7 +636,6 @@ export let updateClient = async (req, res) => {
   try {
     const {
       _id,
-      docNo,
       fname,
       mname,
       lname,
@@ -608,6 +643,7 @@ export let updateClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      docType,
       gender,
       state,
       city,
@@ -616,7 +652,6 @@ export let updateClient = async (req, res) => {
     } = req.body;
     const id = getId(_id);
     const UpdateClient = await Client.findByIdAndUpdate(id, {
-      docNo,
       fname,
       mname,
       lname,
@@ -624,6 +659,7 @@ export let updateClient = async (req, res) => {
       mobile,
       caseType,
       dob,
+      docType,
       gender,
       address: {
         state,
@@ -657,10 +693,8 @@ export let updateProfile = async (req, res) => {
       }
     );
 
-
     return res.status(200).json({ message: "Profile updated..!" });
   } catch (error) {
-
     return res.status(500).json({ error: "Server Error..!" });
   }
 };
@@ -718,7 +752,6 @@ export let deleteEmployee = async (req, res) => {
     }
     return res.status(200).json({ message: "Deleted..!" });
   } catch (error) {
-
     return res.status(500).json({ error: "Server Error..!" });
   }
 };
@@ -732,5 +765,79 @@ export let deleteEvent = async (req, res) => {
     return res.status(200).json({ message: "Task deleted..!" });
   } catch (error) {
     return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export let deleteExpiredEvents = async (req, res) => {
+  try {
+    const now = new Date();
+
+    const result = await Event.deleteMany({
+      $or: [
+        { date: { $lt: now.toISOString().split("T")[0] } },
+        {
+          $and: [
+            { date: now.toISOString().split("T")[0] },
+            { time: { $lt: now.toTimeString().slice(0, 5) } },
+          ],
+        },
+      ],
+    });
+
+    if (result.deletedCount > 0) {
+      return res.status(200).json({ message: "Removed expired events..!" });
+    }
+  } catch (error) {
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export let bulkDelete = async (req, res) => {
+  try {
+    const { ids } = req.body;
+    console.log("IDs to be deleted:", ids);
+
+    const clientDocs = await Files.find({ userId: { $in: ids } });
+
+    if (clientDocs.length > 0) {
+      for (const doc of clientDocs) {
+        for (const file of doc.document) {
+          const fullPath = path.join("uploads", file.filename);
+          if (fs.existsSync(fullPath)) {
+            fs.unlinkSync(fullPath);
+          }
+        }
+      }
+
+      await Files.deleteMany({ userId: { $in: ids } });
+    }
+
+    const result = await Client.deleteMany({ _id: { $in: ids } });
+
+    if (result.deletedCount > 0) {
+      res.status(200).send({ message: "Records deleted successfully." });
+    } else {
+      res
+        .status(404)
+        .send({ message: "No matching records found for deletion." });
+    }
+  } catch (error) {
+    console.error("Error during bulk delete operation:", error);
+    return res.status(500).json({ error: "Server Error" });
+  }
+};
+
+export const resetDocNoCounter = async (req, res) => {
+  try {
+    const result = await DocNoCounter.updateOne(
+      {},
+      { $set: { sequenceValue: 0 } },
+      { upsert: true }
+    );
+    return res
+      .status(200)
+      .json({ message: "Counter reset successfully.", result });
+  } catch (error) {
+    return res.status(500).json({ error: "Server error" });
   }
 };

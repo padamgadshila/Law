@@ -17,8 +17,9 @@ export default function AdminClient({
   selectedFilter,
   selectedSubOption,
   unHideClients,
+  hiddenClients,
 }) {
-  // let [originalClientData, setOriginalClientData] = useState(clientData);
+  let [originalClientData, setOriginalClientData] = useState(unHideClients);
 
   const setClientData = useClientStore((state) => state.setClientData);
   const removeClient = useClientStore((state) => state.removeClient);
@@ -40,20 +41,23 @@ export default function AdminClient({
   };
 
   useEffect(() => {
-    setFilterClientDetails(
-      unHideClients.filter((data) => {
-        return (
+    let filteredData = unHideClients;
+
+    if (selectedFilter === "hide") {
+      filteredData = hiddenClients;
+    }
+
+    if (selectedSubOption) {
+      filteredData = filteredData.filter(
+        (data) =>
           data?.docType === selectedSubOption ||
           data?.status === selectedSubOption ||
           data?.caseType === selectedSubOption
-        );
-      })
-    );
-  }, [selectedSubOption]);
+      );
+    }
 
-  useEffect(() => {
-    setCrud(selectedRecords.length > 0);
-  }, [selectedRecords]);
+    setFilterClientDetails(filteredData);
+  }, [selectedFilter, selectedSubOption]);
 
   // useEffect(() => {
   //   if (query.filter && query.search) {

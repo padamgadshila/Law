@@ -26,6 +26,17 @@ module.exports = {
           "animation-play-state": "running",
         },
       });
+      addUtilities({
+        ".scrollbar-thin": {
+          "::-webkit-scrollbar": {
+            width: "5px",
+          },
+          "::-webkit-scrollbar-thumb": {
+            background: "black",
+            "border-radius": "10px",
+          },
+        },
+      });
     },
   ],
 };

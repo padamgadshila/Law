@@ -1,26 +1,145 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSyncAlt, faBars, faClose } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faClose,
+  faEyeSlash,
+  faPenToSquare,
+  faTrashAlt,
+} from "@fortawesome/free-solid-svg-icons";
 import avatar from "./images/profile.png";
+import { bulkDelete, bulkHide } from "./helpers/helper";
+import toast from "react-hot-toast";
+import { useClientStore } from "../store/store";
 let Navigation = ({
   showSidebar,
   setShowSidebar,
   profile,
   activeTab,
-  Refresh,
   showProfile,
   setShowProfile,
   query,
   setQuery,
   filters,
+  setInputSearch,
+  inputSearch,
+  setFilterClientDetails,
+  Crud,
+  selectedRecords,
+  removeSelectedRecords,
+  handleShowEditor,
+  unHideClients,
+  selectedFilter,
+  setSelectedFilter,
+  selectedSubOption,
+  setSelectedSubOption,
 }) => {
-  const handleOnChange = (e) => {
-    const { name, value } = e.target;
-    setQuery((prev) => ({ ...prev, [name]: value }));
+  const removeClient = useClientStore((state) => state.removeClient);
+  let deleteMany = async () => {
+    try {
+      const { data, status } = await bulkDelete(selectedRecords);
+      if (status === 200) {
+        toast.success(data.message);
+        selectedRecords.forEach((id) => {
+          removeClient(id);
+          removeSelectedRecords(id);
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
   };
-  let [disableFilter, setDisableFilter] = useState(false);
+
+  // const handleFilter = (e) => {
+  //   const { name, value } = e.target;
+  //   setQuery((prev) => ({ ...prev, [name]: value }));
+  // };
+  const handleOnChange = (e) => {
+    const value = e.target.value;
+    setInputSearch(value.toLowerCase());
+    let filtered = unHideClients.filter((client) => {
+      return (
+        (client._id?.toLowerCase() || "").includes(value) ||
+        (client.docNo?.toLowerCase() || "").includes(value) ||
+        (client.fname?.toLowerCase() || "").includes(value) ||
+        (client.mname?.toLowerCase() || "").includes(value) ||
+        (client.lname?.toLowerCase() || "").includes(value) ||
+        (client.email?.toLowerCase() || "").includes(value) ||
+        (client.mobile?.toLowerCase() || "").includes(value) ||
+        (client.caseType?.toLowerCase() || "").includes(value) ||
+        (client.docType?.toLowerCase() || "").includes(value) ||
+        (client.gender?.toLowerCase() || "").includes(value) ||
+        (client.dob?.toLowerCase() || "").includes(value) ||
+        (client.address?.state?.toLowerCase() || "").includes(value) ||
+        (client.address?.city?.toLowerCase() || "").includes(value) ||
+        (client.address?.village?.toLowerCase() || "").includes(value) ||
+        (client.address?.pincode?.toLowerCase() || "").includes(value) ||
+        (client.status?.toLowerCase() || "").includes(value) ||
+        (client.fileUploaded?.toLowerCase() || "").includes(value)
+      );
+    });
+    setFilterClientDetails(filtered);
+  };
+
+  // hide
+  let hideMany = async () => {
+    try {
+      const { data, status } = await bulkHide(selectedRecords);
+      if (status === 200) {
+        toast.success(data.message);
+        selectedRecords.forEach((id) => {
+          removeClient(id);
+          removeSelectedRecords(id);
+        });
+      }
+    } catch (error) {
+      if (error.response) {
+        toast.error(error.response.data.error);
+      }
+    }
+  };
+
+  // filtrs
+
+  const handleFilter = (e) => {
+    setSelectedFilter(e.target.value);
+    setSelectedSubOption("");
+  };
+
+  const handleSubOption = (e) => {
+    setSelectedSubOption(e.target.value);
+  };
+
   return (
-    <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white shadow-lg flex items-center justify-between w-full mx-auto h-[70px]">
+    <div className="relative bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white shadow-lg flex items-center justify-between w-full mx-auto h-[70px]">
+      <div
+        className={`w-full h-[70px] bg-[rgba(0,0,0,.3)] backdrop-blur-sm absolute top-0 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center ${
+          Crud ? "opacity-100 visible" : "opacity-0 invisible"
+        }`}
+      >
+        <div className="bg-white shadow-md rounded-md flex items-center justify-evenly w-[500px] h-[60px]">
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            className="text-red-500 text-3xl cursor-pointer"
+            title="Delete"
+            onClick={deleteMany}
+          />
+          <FontAwesomeIcon
+            icon={faEyeSlash}
+            className="text-blue-500 text-3xl cursor-pointer"
+            title="Hide"
+            onClick={hideMany}
+          />
+          <FontAwesomeIcon
+            icon={faPenToSquare}
+            className="text-green-500 text-3xl cursor-pointer"
+            title="Hide"
+            onClick={handleShowEditor}
+          />
+        </div>
+      </div>
       <div className="flex items-center">
         <FontAwesomeIcon
           icon={showSidebar ? faClose : faBars}
@@ -38,31 +157,45 @@ let Navigation = ({
           <input
             type="text"
             placeholder="Search"
-            value={query.search}
+            value={inputSearch}
             onChange={handleOnChange}
             name="search"
             className="bg-white text-black w-[250px] h-[50px] rounded-l-xl outline-none pl-3 text-xl"
           />
           <select
-            onClick={() => setDisableFilter(true)}
-            value={query.filter}
-            onChange={handleOnChange}
+            value={selectedFilter}
+            onChange={handleFilter}
             name="filter"
-            className="bg-white text-black cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px]  rounded-r-xl"
+            className="bg-white text-black cursor-pointer w-[200px] h-[50px] outline-none appearance-none px-2 text-[22px]  rounded-r-xl"
           >
-            <option disabled={disableFilter}>Filter</option>
+            <option value="" disabled={true}>
+              Filter
+            </option>
             {filters.map((o, i) => (
               <option value={o.name} key={i}>
                 {o.value}
               </option>
             ))}
           </select>
-          <FontAwesomeIcon
-            icon={faSyncAlt}
-            className="ml-5 cursor-pointer text-2xl bg-[#fd25d6] p-2 rounded-full text-white"
-            title="Refresh"
-            onClick={Refresh}
-          />
+          {filters.find((f) => f.name === selectedFilter)?.subOptions && (
+            <select
+              value={selectedSubOption}
+              onChange={handleSubOption}
+              name="subFilter"
+              className="bg-white text-black cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px] rounded-xl ml-4"
+            >
+              <option value="" disabled>
+                Select
+              </option>
+              {filters
+                .find((f) => f.name === selectedFilter)
+                ?.subOptions.map((subOption, i) => (
+                  <option value={subOption} key={i}>
+                    {subOption}
+                  </option>
+                ))}
+            </select>
+          )}
         </div>
       )}
       <img
