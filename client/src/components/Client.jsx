@@ -6,23 +6,17 @@ import { getClients } from "./helpers/helper";
 
 export default function AdminClient({
   toast,
-  query,
   clientData,
   filterClientDetails,
   setFilterClientDetails,
   setCrud,
-  Crud,
   selectedRecords,
   setSelectedRecords,
   selectedFilter,
-  selectedSubOption,
-  unHideClients,
+  removeClient,
+  setSelectedFilter,
+  setClientData,
 }) {
-  // let [originalClientData, setOriginalClientData] = useState(clientData);
-
-  const setClientData = useClientStore((state) => state.setClientData);
-  const removeClient = useClientStore((state) => state.removeClient);
-
   const handleCheckboxChange = (id) => {
     if (selectedRecords.includes(id)) {
       setSelectedRecords(selectedRecords.filter((recordId) => recordId !== id));
@@ -40,16 +34,22 @@ export default function AdminClient({
   };
 
   useEffect(() => {
-    setFilterClientDetails(
-      unHideClients.filter((data) => {
-        return (
-          data?.docType === selectedSubOption ||
-          data?.status === selectedSubOption ||
-          data?.caseType === selectedSubOption
-        );
-      })
-    );
-  }, [selectedSubOption]);
+    if (selectedFilter === "All") {
+      setFilterClientDetails(clientData);
+    } else if (selectedFilter === "Hidden Clients") {
+      setFilterClientDetails(clientData.filter((data) => data.hide === true));
+    } else if (selectedFilter === "Visible Clients") {
+      setFilterClientDetails(clientData.filter((data) => data.hide === false));
+    } else {
+      setFilterClientDetails(
+        clientData.filter((data) => {
+          return (
+            data?.status === selectedFilter || data?.docType === selectedFilter
+          );
+        })
+      );
+    }
+  }, [selectedFilter, clientData]);
 
   useEffect(() => {
     setCrud(selectedRecords.length > 0);
@@ -393,7 +393,7 @@ export default function AdminClient({
       if (status === 201) {
         setClientData(data.clientData);
         // setOriginalClientData(data.clientData);
-        setFilterClientDetails(data.clientData);
+        // setFilterClientDetails(data.clientData);
       }
     } catch (error) {
       toast.error(error.response?.data?.error || "Error fetching data.");

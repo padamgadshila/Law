@@ -44,50 +44,33 @@ export default function Admin() {
   // show sidebar
   let [showSidebar, setShowSidebar] = useState(false);
 
-  // client search and filter
-  let [query, setQuery] = useState({ search: "", filter: "" });
-
   let filters = [
-    { name: "all", value: "All" },
-    { name: "hide", value: "Hidden Clients" },
-    {
-      name: "caseType",
-      value: "Case type",
-      subOptions: [
-        "Criminal",
-        "Property",
-        "Divorce",
-        "Family",
-        "Civil",
-        "Others",
-      ],
-    },
-    {
-      name: "docType",
-      value: "Document type",
-      subOptions: ["Notary", "Subreg", "Only Type"],
-    },
-    {
-      name: "status",
-      value: "Status",
-      subOptions: ["Active", "Pending", "Completed"],
-    },
+    { name: "", value: "Select Filter" },
+    { name: "All", value: "All" },
+    { name: "", value: "Document Type" },
+    { name: "Notary", value: "Notary" },
+    { name: "Subreg", value: "Subreg" },
+    { name: "Only Type", value: "Only Type" },
+    { name: "", value: "Select Status" },
+    { name: "Active", value: "Active" },
+    { name: "Pending", value: "Pending" },
+    { name: "Completed", value: "Completed" },
+    { name: "", value: "Clients Type" },
+    { name: "Hidden Clients", value: "Hidden Clients" },
+    { name: "Visible Clients", value: "Visible Clients" },
   ];
   let [inputSearch, setInputSearch] = useState();
+  let [selectedFilter, setSelectedFilter] = useState("Visible Clients");
   const clientData = useClientStore((state) => state.clientData);
-  let [hiddenClients, setHiddenClients] = useState(
-    clientData.filter((data) => data.hide === true)
-  );
-  let [unHideClients, setUnHiddenClients] = useState(
-    clientData.filter((data) => data.hide === false)
-  );
-  let [filterClientDetails, setFilterClientDetails] = useState(unHideClients);
+  const setClientData = useClientStore((state) => state.setClientData);
+  const removeClient = useClientStore((state) => state.removeClient);
+  let [filterClientDetails, setFilterClientDetails] = useState([]);
 
   useEffect(() => {
-    setFilterClientDetails(clientData.filter((data) => data.hide === false));
-    setHiddenClients(clientData.filter((data) => data.hide === true));
-    setUnHiddenClients(clientData.filter((data) => data.hide === false));
+    // setFilterClientDetails(clientData);
+    setSelectedFilter("Visible Clients");
   }, [clientData]);
+
   let [profile, setProfile] = useState({});
 
   let events = useEvent((state) => state.events);
@@ -107,8 +90,6 @@ export default function Admin() {
   let handleShowEditor = () =>
     showEditor ? setShowEditor(false) : setShowEditor(true);
 
-  let [selectedFilter, setSelectedFilter] = useState("");
-  let [selectedSubOption, setSelectedSubOption] = useState("");
   return (
     <div className="w-full h-screen relative">
       <Toaster />
@@ -136,10 +117,8 @@ export default function Admin() {
         setShowSidebar={setShowSidebar}
         profile={profile}
         activeTab={activeTab}
-        query={query}
         showProfile={showProfile}
         setShowProfile={setShowProfile}
-        setQuery={setQuery}
         filters={filters}
         inputSearch={inputSearch}
         setInputSearch={setInputSearch}
@@ -148,11 +127,10 @@ export default function Admin() {
         selectedRecords={selectedRecords}
         removeSelectedRecords={removeSelectedRecords}
         handleShowEditor={handleShowEditor}
-        unHideClients={unHideClients}
         selectedFilter={selectedFilter}
         setSelectedFilter={setSelectedFilter}
-        selectedSubOption={selectedSubOption}
-        setSelectedSubOption={setSelectedSubOption}
+        clientData={clientData}
+        setClientData={setClientData}
       />
       {/* Main Page */}
       <div className="flex">
@@ -175,19 +153,17 @@ export default function Admin() {
           {activeTab === 1 && <AdminEmployee toast={toast} />}
           {activeTab === 2 && (
             <Client
-              query={query}
               toast={toast}
               clientData={clientData}
               filterClientDetails={filterClientDetails}
               setFilterClientDetails={setFilterClientDetails}
-              Crud={Crud}
               setCrud={setCrud}
               selectedRecords={selectedRecords}
               setSelectedRecords={setSelectedRecords}
               selectedFilter={selectedFilter}
-              selectedSubOption={selectedSubOption}
-              unHideClients={unHideClients}
-              hiddenClients={hiddenClients}
+              setSelectedFilter={setSelectedFilter}
+              removeClient={removeClient}
+              setClientData={setClientData}
             />
           )}
           {/* Add Event */}
@@ -211,6 +187,8 @@ export default function Admin() {
         handleShowEditor={handleShowEditor}
         selectedRecords={selectedRecords}
         setFilterClientDetails={setFilterClientDetails}
+        removeSelectedRecords={removeSelectedRecords}
+        removeClient={removeClient}
       />
     </div>
   );

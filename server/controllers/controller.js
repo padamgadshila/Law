@@ -361,10 +361,13 @@ export let bulkHide = async (req, res) => {
   try {
     const { ids } = req.body;
 
-    const result = await Client.updateMany(
-      { _id: { $in: ids } },
-      { $set: { hide: true } }
-    );
+    const result = await Client.updateMany({ _id: { $in: ids } }, [
+      {
+        $set: {
+          hide: { $not: "$hide" },
+        },
+      },
+    ]);
     if (result.modifiedCount > 0) {
       return res.status(200).json({ message: "Records hidden..!" });
     }

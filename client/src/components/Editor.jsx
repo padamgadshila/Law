@@ -11,6 +11,8 @@ let Editor = ({
   handleShowEditor,
   selectedRecords,
   setFilterClientDetails,
+  removeSelectedRecords,
+  removeClient,
 }) => {
   const setClientData = useClientStore((state) => state.setClientData);
   const formik = useFormik({
@@ -29,6 +31,9 @@ let Editor = ({
           toast.success(data.message);
           formik.resetForm();
           handleShowEditor(false);
+          selectedRecords.forEach((id) => {
+            removeSelectedRecords(id);
+          });
           await getClientData();
         }
       } catch (error) {
@@ -44,7 +49,7 @@ let Editor = ({
       const { data, status } = await getClients();
       if (status === 201) {
         setClientData(data.clientData);
-        setFilterClientDetails(data.clientData);
+        // setFilterClientDetails(data.clientData);
       }
     } catch (error) {
       toast.error(error.response?.data?.error || "Error fetching data.");

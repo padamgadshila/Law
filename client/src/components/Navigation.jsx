@@ -8,7 +8,7 @@ import {
   faTrashAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import avatar from "./images/profile.png";
-import { bulkDelete, bulkHide } from "./helpers/helper";
+import { bulkDelete, bulkHide, getClients } from "./helpers/helper";
 import toast from "react-hot-toast";
 import { useClientStore } from "../store/store";
 let Navigation = ({
@@ -18,8 +18,7 @@ let Navigation = ({
   activeTab,
   showProfile,
   setShowProfile,
-  query,
-  setQuery,
+
   filters,
   setInputSearch,
   inputSearch,
@@ -28,11 +27,11 @@ let Navigation = ({
   selectedRecords,
   removeSelectedRecords,
   handleShowEditor,
-  unHideClients,
+
   selectedFilter,
   setSelectedFilter,
-  selectedSubOption,
-  setSelectedSubOption,
+  setClientData,
+  clientData,
 }) => {
   const removeClient = useClientStore((state) => state.removeClient);
   let deleteMany = async () => {
@@ -52,14 +51,10 @@ let Navigation = ({
     }
   };
 
-  // const handleFilter = (e) => {
-  //   const { name, value } = e.target;
-  //   setQuery((prev) => ({ ...prev, [name]: value }));
-  // };
   const handleOnChange = (e) => {
     const value = e.target.value;
     setInputSearch(value.toLowerCase());
-    let filtered = unHideClients.filter((client) => {
+    let filtered = clientData.filter((client) => {
       return (
         (client._id?.toLowerCase() || "").includes(value) ||
         (client.docNo?.toLowerCase() || "").includes(value) ||
@@ -81,6 +76,7 @@ let Navigation = ({
       );
     });
     setFilterClientDetails(filtered);
+    setSelectedFilter("All");
   };
 
   // hide
@@ -90,9 +86,9 @@ let Navigation = ({
       if (status === 200) {
         toast.success(data.message);
         selectedRecords.forEach((id) => {
-          removeClient(id);
           removeSelectedRecords(id);
         });
+        await getClientData();
       }
     } catch (error) {
       if (error.response) {
@@ -100,16 +96,19 @@ let Navigation = ({
       }
     }
   };
-
-  // filtrs
-
+  const getClientData = async () => {
+    try {
+      const { data, status } = await getClients();
+      if (status === 201) {
+        setClientData(data.clientData);
+        // setFilterClientDetails(data.clientData);
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.error || "Error fetching data.");
+    }
+  };
   const handleFilter = (e) => {
     setSelectedFilter(e.target.value);
-    setSelectedSubOption("");
-  };
-
-  const handleSubOption = (e) => {
-    setSelectedSubOption(e.target.value);
   };
 
   return (
@@ -166,36 +165,18 @@ let Navigation = ({
             value={selectedFilter}
             onChange={handleFilter}
             name="filter"
-            className="bg-white text-black cursor-pointer w-[200px] h-[50px] outline-none appearance-none px-2 text-[22px]  rounded-r-xl"
+            className="bg-white font-bold text-black cursor-pointer w-[200px] h-[50px] outline-none appearance-none px-2 text-[22px] rounded-r-xl text-center"
           >
-            <option value="" disabled={true}>
-              Filter
-            </option>
             {filters.map((o, i) => (
-              <option value={o.name} key={i}>
+              <option
+                value={o.name}
+                disabled={o.name === "" ? true : false}
+                key={i}
+              >
                 {o.value}
               </option>
             ))}
           </select>
-          {filters.find((f) => f.name === selectedFilter)?.subOptions && (
-            <select
-              value={selectedSubOption}
-              onChange={handleSubOption}
-              name="subFilter"
-              className="bg-white text-black cursor-pointer w-auto h-[50px] outline-none appearance-none px-2 text-[22px] rounded-xl ml-4"
-            >
-              <option value="" disabled>
-                Select
-              </option>
-              {filters
-                .find((f) => f.name === selectedFilter)
-                ?.subOptions.map((subOption, i) => (
-                  <option value={subOption} key={i}>
-                    {subOption}
-                  </option>
-                ))}
-            </select>
-          )}
         </div>
       )}
       <img
