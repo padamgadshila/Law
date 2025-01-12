@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import { useEvent } from "../store/store";
-import { dashboardData, deleteEvent, expiredEvents } from "./helpers/helper";
+import { dashboardData, deleteEvent } from "./helpers/helper";
 let Dashboard = ({ toast, setEvents, events }) => {
   const id = localStorage.getItem("id");
   let [Totals, setTotals] = useState([{}]);
 
   let [totalEmp, setTotalEmp] = useState(0);
   let [totalCli, setTotalCli] = useState(0);
-  let [totalMaleCli, setTotalMaleCli] = useState(0);
-  let [totalFemaleCli, setTotalFemaleCli] = useState(0);
+  let [totalFiles, setTotalFiles] = useState(0);
+  let [activeClients, setActiveClients] = useState(0);
+  let [completedClients, setCompletedClients] = useState(0);
 
   let removeEvents = useEvent((state) => state.removeEvents);
 
@@ -18,15 +19,16 @@ let Dashboard = ({ toast, setEvents, events }) => {
     let getDashboardData = async () => {
       const { data, status } = await dashboardData(id);
       if (status === 200) {
-        setTotalEmp(data.totalEmployee);
-        setTotalCli(data.TotalClients);
-        setTotalMaleCli(data.totalMaleClients);
-        setTotalFemaleCli(data.totalFemaleClients);
-        setEvents(data.events);
+        setTotalEmp(data?.totalEmployee);
+        setTotalCli(data?.TotalClients);
+        setTotalFiles(data?.totalFiles);
+        setActiveClients(data?.activeClients);
+        setCompletedClients(data?.completedClients);
+        setEvents(data?.events);
       }
     };
     getDashboardData();
-  }, []);
+  }, [id, setEvents]);
 
   useEffect(() => {
     const sortedEvents = events.sort((a, b) => {
@@ -35,20 +37,29 @@ let Dashboard = ({ toast, setEvents, events }) => {
       return dateTimeA - dateTimeB;
     });
     setEvents(sortedEvents);
-    console.log(events);
-  }, [events]);
+  }, [events, setEvents]);
 
   useEffect(() => {
     setTotals([
-      { name: "employees", total: totalEmp },
-      { name: "clients", total: totalCli },
-      { name: "Male Clients", total: totalMaleCli },
-      { name: "Female Clients", total: totalFemaleCli },
+      { name: "Total employees", total: totalEmp },
+      { name: "Total clients", total: totalCli },
+      { name: "Active Clients", total: activeClients },
+      { name: "Completed", total: completedClients },
+      { name: "Total documents", total: totalFiles },
     ]);
-  }, [totalEmp, totalCli, totalMaleCli, totalFemaleCli]);
-  let Card = ({ title, count }) => {
+  }, [totalEmp, totalCli, activeClients, completedClients, totalFiles, events]);
+  let Card = ({ title, count, index }) => {
     return (
-      <div className="bg-gradient-to-r from-green-400 to-blue-500 text-white p-6 w-[300px] rounded-lg shadow-md text-center">
+      <div
+        className={`bg-gradient-to-r  text-white flex flex-col p-6 w-[260px] rounded-lg shadow-md text-center ${
+          index === 0 ? "from-green-400 to-blue-500" : ""
+        } ${index === 1 ? "from-yellow-400 to-orange-500" : ""} 
+         ${index === 2 ? "from-indigo-400 to-purple-500" : ""}
+         ${index === 3 ? "from-pink-400 to-red-500" : ""}
+         ${index === 4 ? "from-blue-400 to-green-500" : ""}
+        
+        `}
+      >
         <span className="text-2xl">{title}</span>
         <h1 className="font-bold text-4xl">{count || 0}</h1>
       </div>
@@ -69,26 +80,12 @@ let Dashboard = ({ toast, setEvents, events }) => {
     }
   };
 
-  useEffect(() => {
-    let deleteExpiredEvents = async () => {
-      try {
-        const { data, status } = await expiredEvents();
-        if (status === 200) {
-          toast.success(data.message);
-        }
-      } catch (error) {
-        toast.error(error.response.data.error);
-      }
-    };
-    deleteExpiredEvents();
-  }, []);
-
   return (
     <div className="px-7 py-5">
       <h1 className="font-bold text-2xl text-gray-700 ml-3">Overview</h1>
       <div className="flex gap-3 mt-2">
         {Totals.map((v, i) => (
-          <Card title={`Total ${v.name}`} key={i} count={v.total} />
+          <Card title={v.name} key={i} index={i} count={v.total} />
         ))}
       </div>
 

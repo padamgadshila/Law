@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useFormik } from "formik";
 import { taskValidation } from "./helpers/validation";
 import { addEvent, getEvents } from "./helpers/helper";
-let AddEvent = ({ toast, events, setEvents }) => {
+let AddEvent = ({ toast, setEvents }) => {
   const id = localStorage.getItem("id");
   const formik = useFormik({
     initialValues: {

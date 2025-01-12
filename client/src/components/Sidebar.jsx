@@ -6,6 +6,7 @@ import {
   faUserTie,
   faUser,
   faCalendarDays,
+  faGears,
 } from "@fortawesome/free-solid-svg-icons";
 let Sidebar = ({
   showSidebar,
@@ -15,11 +16,6 @@ let Sidebar = ({
 }) => {
   let tabs = [
     { name: "Dashboard", icon: faTachometerAlt, option: [] },
-    {
-      name: "Employee",
-      icon: faUserTie,
-      option: [{ name: "Add employee", link: "/addEmployee" }],
-    },
     {
       name: "Client",
       icon: faUser,
@@ -35,6 +31,11 @@ let Sidebar = ({
       name: "Add Event",
       icon: faCalendarDays,
       option: [],
+    },
+    {
+      name: "Settings",
+      icon: faGears,
+      option: [{ name: "Add employee", link: "/addEmployee" }],
     },
   ];
   const [activeDropdown, setActiveDropdown] = useState(null);

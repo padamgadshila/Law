@@ -6,7 +6,6 @@ import { useClientStore, useEvent, useSelectRecords } from "../store/store";
 import AdminEmployee from "./AdminEmployee";
 import { Profile } from "./Profile";
 import AddEvent from "./AddEvent";
-import Footer from "./Footer";
 import Editor from "./Editor";
 import Navigation from "./Navigation";
 import Sidebar from "./Sidebar";
@@ -61,9 +60,9 @@ export default function Admin() {
   ];
   let [inputSearch, setInputSearch] = useState();
   let [selectedFilter, setSelectedFilter] = useState("Visible Clients");
-  const clientData = useClientStore((state) => state.clientData);
-  const setClientData = useClientStore((state) => state.setClientData);
-  const removeClient = useClientStore((state) => state.removeClient);
+  let clientData = useClientStore((state) => state.clientData);
+  let setClientData = useClientStore((state) => state.setClientData);
+  let removeClient = useClientStore((state) => state.removeClient);
   let [filterClientDetails, setFilterClientDetails] = useState([]);
 
   useEffect(() => {
@@ -150,8 +149,8 @@ export default function Admin() {
           {activeTab === 0 && (
             <Dashboard events={events} setEvents={setEvents} toast={toast} />
           )}
-          {activeTab === 1 && <AdminEmployee toast={toast} />}
-          {activeTab === 2 && (
+
+          {activeTab === 1 && (
             <Client
               toast={toast}
               clientData={clientData}
@@ -167,9 +166,10 @@ export default function Admin() {
             />
           )}
           {/* Add Event */}
-          {activeTab === 3 && (
+          {activeTab === 2 && (
             <AddEvent toast={toast} events={events} setEvents={setEvents} />
           )}
+          {activeTab === 3 && <AdminEmployee toast={toast} />}
         </div>
       </div>
 

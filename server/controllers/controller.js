@@ -216,6 +216,7 @@ export let addClient = async (req, res) => {
       address: { state, city, village, pincode },
       fileUploaded: "No",
       hide: false,
+      status: "Active",
     });
 
     const savedClient = await client.save();
@@ -465,6 +466,8 @@ export let getEmployee = async (req, res) => {
     }
     return res.status(200).json({ employeeData });
   } catch (error) {
+    console.log(error);
+
     return res.status(500).json({ error: "Server Error..!" });
   }
 };
@@ -539,21 +542,24 @@ export let dashboardData = async (req, res) => {
     const _id = getId(id);
     const Employee = await User.find({ role: "employee" });
     const Clients = await Client.find();
+    const File = await Files.find();
     const events = await Event.find({ adminId: _id });
     let totalEmployee = Employee.length;
     let TotalClients = Clients.length;
-    let totalMaleClients = Clients.filter(
-      (data) => data.gender === "Male"
-    ).length;
-    let totalFemaleClients = Clients.filter(
-      (data) => data.gender === "Female"
-    ).length;
+    let totalFiles = File.length;
 
-    return res.status(200).set("Cache-Control", "no-store").json({
+    let activeClients = Clients.filter(
+      (data) => data.status === "Active"
+    ).length;
+    let completedClients = Clients.filter(
+      (data) => data.status === "Completed"
+    ).length;
+    return res.status(200).json({
       totalEmployee,
       TotalClients,
-      totalMaleClients,
-      totalFemaleClients,
+      activeClients,
+      completedClients,
+      totalFiles,
       events,
     });
   } catch (error) {

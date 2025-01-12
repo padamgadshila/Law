@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBars,
@@ -151,7 +151,7 @@ let Navigation = ({
           {profile.username || "Admin"}
         </h1>
       </div>
-      {activeTab === 2 && (
+      {activeTab === 1 && (
         <div className="flex items-center gap-1">
           <input
             type="text"

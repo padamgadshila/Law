@@ -1,27 +1,29 @@
 import mongoose from "mongoose";
 
-const clientSchema = new mongoose.Schema({
-  docNo: { type: String },
-  fname: { type: String },
-  mname: { type: String },
-  lname: { type: String },
-  email: { type: String },
-  mobile: { type: String },
-  caseType: { type: String },
-  docType: { type: String },
-  dob: { type: String },
-  gender: { type: String },
-  address: {
-    state: { type: String },
-    city: { type: String },
-    village: { type: String },
-    pincode: { type: String },
+const clientSchema = new mongoose.Schema(
+  {
+    docNo: { type: String },
+    fname: { type: String },
+    mname: { type: String },
+    lname: { type: String },
+    email: { type: String },
+    mobile: { type: String },
+    caseType: { type: String },
+    docType: { type: String },
+    dob: { type: String },
+    gender: { type: String },
+    address: {
+      state: { type: String },
+      city: { type: String },
+      village: { type: String },
+      pincode: { type: String },
+    },
+    status: { type: String },
+    fileUploaded: { type: String },
+    hide: { type: Boolean },
   },
-  status: { type: String },
-  fileUploaded: { type: String },
-  hide: { type: Boolean },
-  createdAt: { type: Date, default: Date.now },
-});
+  { timestamps: true }
+);
 
 const docNoCounterSchema = new mongoose.Schema({
   sequenceValue: { type: Number, default: 0 },

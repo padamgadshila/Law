@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { deleteClientData, getClientDocuments } from "./helpers/helper";
-import { useClientStore } from "../store/store";
 import { getClients } from "./helpers/helper";
 
 export default function AdminClient({
@@ -49,11 +48,11 @@ export default function AdminClient({
         })
       );
     }
-  }, [selectedFilter, clientData]);
+  }, [selectedFilter, clientData, setFilterClientDetails]);
 
   useEffect(() => {
     setCrud(selectedRecords.length > 0);
-  }, [selectedRecords]);
+  }, [selectedRecords, setCrud]);
 
   // useEffect(() => {
   //   if (query.filter && query.search) {

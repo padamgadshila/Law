@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faClose } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
@@ -18,6 +18,10 @@ let Documents = ({ showAddDocument, handleAddDocumentDisplay, clientData }) => {
     });
     setFilteredClients(filtered);
   };
+
+  useEffect(() => {
+    setFilteredClients(clientData);
+  }, [clientData]);
   return (
     <div
       className={`absolute bg-[rgba(0,0,0,.3)] backdrop-blur-md w-full h-full top-0 right-0 z-50 overflow-hidden ${

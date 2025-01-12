@@ -41,9 +41,9 @@ import { Mail } from "../controllers/mailing.system.js";
 const router = Router();
 
 router.route("/auth").post(authorize(["admin", "employee"]), auth);
-router.route("/login").post(login);
-router.route("/addEmployee").post(authorize("admin"), addEmployee);
-router.route("/addClient").post(authorize(["admin", "employee"]), addClient);
+router.route("/login").post(login); //done
+router.route("/addEmployee").post(authorize("admin"), addEmployee); //done
+router.route("/addClient").post(authorize(["admin", "employee"]), addClient); //
 router.route("/add").post(add);
 router
   .route("/addClientDocument")

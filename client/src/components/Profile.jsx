@@ -5,30 +5,29 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRightFromBracket, faGear } from "@fortawesome/free-solid-svg-icons";
 import { getProfileInfo } from "./helpers/helper";
 export let Profile = ({ toast, Link, profile, setProfile, navigate }) => {
-  let getProfile = async (id, role) => {
-    try {
-      const {
-        data: { userData },
-        status,
-      } = await getProfileInfo(id, role);
-      if (status === 200) {
-        setProfile(userData);
-      } else {
-        throw new Error();
-      }
-    } catch (error) {
-      if (error.response) {
-        const { data } = error.response;
-        toast.error(data.error);
-      }
-    }
-  };
-
   useEffect(() => {
     const id = localStorage.getItem("id");
     const role = localStorage.getItem("role");
+    let getProfile = async (id, role) => {
+      try {
+        const {
+          data: { userData },
+          status,
+        } = await getProfileInfo(id, role);
+        if (status === 200) {
+          setProfile(userData);
+        } else {
+          throw new Error();
+        }
+      } catch (error) {
+        if (error.response) {
+          const { data } = error.response;
+          toast.error(data.error);
+        }
+      }
+    };
     getProfile(id, role);
-  }, []);
+  }, [setProfile, toast]);
 
   let logout = () => {
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
